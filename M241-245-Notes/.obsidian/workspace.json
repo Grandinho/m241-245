@@ -11,27 +11,32 @@
             "id": "ae6a70127208db36",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf"
+                "file": "BME680.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-file-text",
-              "title": "M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung)"
+              "icon": "lucide-file",
+              "title": "BME680"
             }
           },
           {
             "id": "a41666cb3772a5e3",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "Kick-Off 30.01.2025 (1).pdf"
+                "file": "Quellen.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-file-text",
-              "title": "Kick-Off 30.01.2025 (1)"
+              "icon": "lucide-file",
+              "title": "Quellen"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -173,12 +178,14 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "ae6a70127208db36",
+  "active": "a41666cb3772a5e3",
   "lastOpenFiles": [
     "Kick-Off 30.01.2025 (1).pdf",
+    "BME680.md",
+    "Notes.md",
+    "Quellen.md",
     "M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
     "M241-Block 01 v1.0 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
-    "Untitled.md",
     "~$Zeitplan.xlsx",
     "Zeitplan.xlsx",
     "Book.xlsx",
