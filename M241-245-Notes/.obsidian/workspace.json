@@ -23,18 +23,15 @@
             "id": "a41666cb3772a5e3",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "Untitled.md",
-                "mode": "source",
-                "source": false
+                "file": "Kick-Off 30.01.2025 (1).pdf"
               },
-              "icon": "lucide-file",
-              "title": "Untitled"
+              "icon": "lucide-file-text",
+              "title": "Kick-Off 30.01.2025 (1)"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -176,11 +173,11 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "a41666cb3772a5e3",
+  "active": "ae6a70127208db36",
   "lastOpenFiles": [
+    "Kick-Off 30.01.2025 (1).pdf",
     "M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
     "M241-Block 01 v1.0 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
-    "Kick-Off 30.01.2025 (1).pdf",
     "Untitled.md",
     "~$Zeitplan.xlsx",
     "Zeitplan.xlsx",
