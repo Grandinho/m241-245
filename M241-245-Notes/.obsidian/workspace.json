@@ -34,9 +34,21 @@
               "icon": "lucide-file",
               "title": "Quellen"
             }
+          },
+          {
+            "id": "9987c8b49df1d117",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.8.7"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.8.7"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -178,7 +190,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "a41666cb3772a5e3",
+  "active": "9987c8b49df1d117",
   "lastOpenFiles": [
     "Kick-Off 30.01.2025 (1).pdf",
     "BME680.md",
