@@ -10,11 +10,11 @@
 - Pressure
 - Gas readings
 
-**Client:**
-- ClientId (PK)
-- Clientname
+**Device:**
+- DeviceId (PK)
+- Devicename
 - Localization
 
+(Maybe auth with Microsoft)
 **User:**
 - UserId (PK)
-- 
