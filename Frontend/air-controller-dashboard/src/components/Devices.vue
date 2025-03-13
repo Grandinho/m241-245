@@ -1,12 +1,24 @@
-<script>
-
+<script setup>
+import { DeviceApi } from '@/device/Device';
+import Device from './Device.vue';
+import { ref } from 'vue';
+import { ExitStatus } from 'typescript';
 
 //TODO LOAD Devices from Webservice
+const apiClinet = new DeviceApi
 
-const devices = { [
-    
-] 
+const devices = apiClinet.getMovies()
 
+console.log(devices)
+
+const selectedId = ref(0)
+
+function switchDevice(id) {
+    if (selectedId.value == id)
+        return;
+
+    console.log(id)
+    selectedId.value = id
 }
 
 
@@ -17,7 +29,13 @@ const devices = { [
     <div class="conn-devices">
         <h2>Connected Devices</h2>
         <div class="devices">
-
+            <Device 
+                v-for="device in devices" 
+                :key="device.id" 
+                :device="device" 
+                class="device" 
+                :class="['device', { 'device-selected': device.id === selectedId }]" 
+                @click="switchDevice(device.id)"/>
         </div>
     </div>
 
@@ -26,7 +44,7 @@ const devices = { [
 <style scoped>
     .conn-devices {
         display: flex;
-        padding: 25px 0px 24px 0px;
+        padding-bottom: 25px;
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
@@ -39,6 +57,10 @@ const devices = { [
         padding: 0px 741.703px 16px 0px;
         align-items: flex-start;
         gap: 16px;
+    }
+
+    .device-selected {
+        border: 1px solid #3B82F6;
     }
 
 </style>

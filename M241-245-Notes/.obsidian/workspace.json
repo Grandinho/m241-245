@@ -69,12 +69,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Frontend/Aufbau.md",
+                "file": "Firmware/Arduino.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Aufbau"
+              "title": "Arduino"
+            }
+          },
+          {
+            "id": "48ba7ca83b2cb50e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Firmware/BME680.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "BME680"
             }
           },
           {
@@ -104,7 +118,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -246,15 +260,18 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "911b2df615e606b6",
+  "active": "48ba7ca83b2cb50e",
   "lastOpenFiles": [
-    "Frontend/attachments/Pasted image 20250308090918.png",
+    "Firmware/attachments/Pasted image 20250313110722.png",
+    "Firmware/Arduino.md",
+    "Firmware/attachments/Pasted image 20250313081149.png",
+    "Ext Doku/M241-Block 01 v1.0 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
+    "Ext Doku/Kick-Off 30.01.2025 (1).pdf",
     "Frontend/Aufbau.md",
+    "Frontend/attachments/Pasted image 20250308090918.png",
     "Frontend/attachments",
     "Firmware/BME680.md",
-    "Firmware/Arduino.md",
     "Pasted image 20250313081109.png",
-    "Firmware/attachments/Pasted image 20250313081149.png",
     "Firmware/attachments",
     "Notes.md",
     "Quellen.md",
@@ -262,12 +279,10 @@
     "Database/Aufbau.md",
     "Ext Doku/M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
     "Database",
-    "Ext Doku/Kick-Off 30.01.2025 (1).pdf",
     "Ext Doku",
     "Frontend",
     "Firmware",
     "Webservice",
-    "Ext Doku/M241-Block 01 v1.0 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
     "Welcome.md"
   ]
 }
