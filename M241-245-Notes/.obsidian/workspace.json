@@ -36,6 +36,48 @@
             }
           },
           {
+            "id": "c149cfafa6bf7017",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Firmware/BME680.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "BME680"
+            }
+          },
+          {
+            "id": "fd5b6fd714b7fb38",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Frontend/Aufbau.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Aufbau"
+            }
+          },
+          {
+            "id": "911b2df615e606b6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Frontend/Aufbau.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Aufbau"
+            }
+          },
+          {
             "id": "4ab8c49085b86f19",
             "type": "leaf",
             "state": {
@@ -62,7 +104,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -204,25 +246,28 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "12014fd121b20740",
+  "active": "911b2df615e606b6",
   "lastOpenFiles": [
-    "Webservice/Anforderungen.md",
+    "Frontend/attachments/Pasted image 20250308090918.png",
     "Frontend/Aufbau.md",
-    "Pasted image 20250308090918.png",
+    "Frontend/attachments",
+    "Firmware/BME680.md",
+    "Firmware/Arduino.md",
+    "Pasted image 20250313081109.png",
+    "Firmware/attachments/Pasted image 20250313081149.png",
+    "Firmware/attachments",
+    "Notes.md",
+    "Quellen.md",
+    "Webservice/Anforderungen.md",
     "Database/Aufbau.md",
     "Ext Doku/M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
-    "Firmware/BME680.md",
-    "Notes.md",
     "Database",
     "Ext Doku/Kick-Off 30.01.2025 (1).pdf",
     "Ext Doku",
     "Frontend",
     "Firmware",
     "Webservice",
-    "Quellen.md",
     "Ext Doku/M241-Block 01 v1.0 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
-    "~$Zeitplan.xlsx",
-    "Zeitplan.xlsx",
     "Welcome.md"
   ]
 }
