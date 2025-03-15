@@ -29,38 +29,30 @@ function switchDevice(id) {
     <div class="conn-devices">
         <h2>Connected Devices</h2>
         <div class="devices">
-            <Device 
-                v-for="device in devices" 
-                :key="device.id" 
-                :device="device" 
-                class="device" 
-                :class="['device', { 'device-selected': device.id === selectedId }]" 
-                @click="switchDevice(device.id)"/>
+            <Device v-for="device in devices" :key="device.id" :device="device" class="device"
+                :class="['device', { 'device-selected': device.id === selectedId }]" @click="switchDevice(device.id)" />
         </div>
     </div>
 
 </template>
 
 <style scoped>
-    .conn-devices {
-        display: flex;
-        padding-bottom: 25px;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 18px;
-    }
+.conn-devices {
+    display: flex;
+    padding-bottom: 25px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 6px;
+}
 
-    .devices {
-        display: flex;
-        height: 102px;
-        padding: 0px 741.703px 16px 0px;
-        align-items: flex-start;
-        gap: 16px;
-    }
+.devices {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
 
-    .device-selected {
-        border: 1px solid #3B82F6;
-    }
-
+.device-selected {
+    border: 1px solid #3B82F6;
+}
 </style>

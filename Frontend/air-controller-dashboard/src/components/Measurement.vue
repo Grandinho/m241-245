@@ -5,41 +5,92 @@
 <template>
     <div class="measuremnt">
         <div class="header">
-            <p>Meausremnt Name</p>
-            <button>
-                <img src="../assets/options.svg" alt="">
+            <div class="title">Air Quality Index</div>
+            <button class="options">
+                <img src="../assets/options.png" alt="" class="options-img">
             </button>
         </div>
         <div class="content">
-            <div class="value">
-                <div>85</div>
-                <div>Good</div>
+            <div class="value-content">
+                <div class="value">85</div>
+                <div class="indicator">Good</div>
             </div>
         </div>
     </div>
 
 </template>
 
-<style>
+<style scoped>
+.measuremnt {
+    border-radius: 0.5rem;
+    border: 0px solid #E5E7EB;
+    background: #FFF;
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 24px;
+}
 
-    .measuremnt {
-        border-radius: 0.5rem;
-        border: 0px solid #E5E7EB;
-        background: #FFF;
-        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        width: 28rem;
-        padding: 1.5rem;
-    }
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 12px;
+}
 
-    .header {
-        display: flex;
-        height: 1.5rem;
-        padding: 0.125rem 0rem;
-        justify-content: center;
-        align-items: center;
-        gap: 16.75rem;
-    }
+.content {
+    display: flex;
+    padding: 70px 0px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    border: 0px solid #E5E7EB;
+    background: radial-gradient(circle, #DCFCE7 0%, rgba(249, 250, 251, 100) 100%);
+}
+
+button {
+    border: 0px solid #E5E7EB;
+    background: rgba(0, 0, 0, 0.00);
+}
+
+
+
+.options-img:hover {
+    filter: invert(52%) sepia(100%) saturate(6061%) hue-rotate(217deg) brightness(95%) contrast(93%);
+    cursor: pointer;
+}
+
+
+.value-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.value {
+    color: #22C55E;
+    text-align: center;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.indicator {
+    color: #4B5563;
+    text-align: center;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.title {
+    color: #000;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    /* 100% */
+}
 </style>
