@@ -123,12 +123,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Publish.md",
+                "file": "Database/Aufbau.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Publish"
+              "title": "Aufbau"
             }
           },
           {
@@ -302,9 +302,9 @@
   },
   "active": "83666146e2ac8331",
   "lastOpenFiles": [
+    "Firmware/BME680.md",
     "Database/Aufbau.md",
     "Publish.md",
-    "Firmware/BME680.md",
     "Firmware/Arduino.md",
     "Firmware/attachments/Pasted image 20250313110722.png",
     "Firmware/attachments/Pasted image 20250313081149.png",
