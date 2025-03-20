@@ -93,14 +93,12 @@
             "id": "da9046cfce4bef62",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "Firmware/BME680.md",
-                "mode": "source",
-                "source": false
+                "file": "Firmware/attachments/Pasted image 20250313081149.png"
               },
-              "icon": "lucide-file",
-              "title": "BME680"
+              "icon": "lucide-image",
+              "title": "Pasted image 20250313081149"
             }
           },
           {
@@ -187,7 +185,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "1c461904dc118988",
@@ -274,12 +273,12 @@
   },
   "active": "da9046cfce4bef62",
   "lastOpenFiles": [
+    "Firmware/Arduino.md",
+    "Firmware/BME680.md",
     "Ext Doku/M241-Block 02 (Problemdefinition und Zielgruppenanalyse) V1.0.pdf",
     "Ext Doku/M241-Block 03 (Marktforschung und Validierung von Lösungsansätzen) V1.0.pdf",
     "Ext Doku/M241-Block 01 v1.0 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
-    "Firmware/BME680.md",
     "Firmware/attachments/Pasted image 20250313110722.png",
-    "Firmware/Arduino.md",
     "Firmware/attachments/Pasted image 20250313081149.png",
     "Ext Doku/Kick-Off 30.01.2025 (1).pdf",
     "Frontend/Aufbau.md",
@@ -295,7 +294,6 @@
     "Database",
     "Ext Doku",
     "Frontend",
-    "Firmware",
     "Welcome.md"
   ]
 }

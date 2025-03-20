@@ -20,24 +20,24 @@
 #include <Adafruit_Sensor.h>
 #include "Adafruit_BME680.h"
 
-// #define BME_SCK 13
-// #define BME_MISO 12
-// #define BME_MOSI 11
-// #define BME_CS 10
+#define BME_SCK 13
+#define BME_MISO 12
+#define BME_MOSI 11
+#define BME_CS 10
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 #define BMP680_I2C_ADDRESS 0x76
 
 Adafruit_BME680 bme(&Wire); // I2C
 //Adafruit_BME680 bme(&Wire1); // example of I2C on another bus
-//Adafruit_BME680 bme(BME_CS); // hardware SPI
-//Adafruit_BME680 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
+// Adafruit_BME680 bme(BME_CS); // hardware SPI
+// Adafruit_BME680 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
 
 void setup() {
   
   Serial.begin(9600);
   while (!Serial);
-  Serial.println(F("BME680 test"));
+  Serial.println(F("BME680 testt"));
 
   if (!bme.begin()) {
     Serial.println("Could not find a valid BME680 sensor, check wiring!");
