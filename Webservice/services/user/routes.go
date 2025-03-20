@@ -28,7 +28,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("register request")
 	if r.Body == nil {
 
 	}

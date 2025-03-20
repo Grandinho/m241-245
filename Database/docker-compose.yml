@@ -9,3 +9,18 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
     ports:
       - 3306:3306
+    networks:
+      - app-network
+  golang-app:
+    image: grand512/air-controller-webservice
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - mariadb
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

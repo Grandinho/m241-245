@@ -5,12 +5,14 @@ import (
 	"air-controller-webservice/config"
 	"air-controller-webservice/db"
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/go-sql-driver/mysql"
 )
 
 func main() {
+	fmt.Println("Starting...")
 	db, err := db.NewMariaDBStorage(mysql.Config{
 		User:                 config.Envs.DBUser,
 		Passwd:               config.Envs.DBPassword,
@@ -32,7 +34,7 @@ func main() {
 
 func initStorage(db *sql.DB) {
 	if err := db.Ping(); err != nil {
-		log.Fatal(nil)
+		log.Fatal(err)
 	}
 
 	log.Println("DB: Sucessfully connected")
