@@ -128,6 +128,7 @@ func ScanRowsIntoRequestedDevice(rows *sql.Rows) (*types.RequestDevice, error) {
 		&requestedDevice.ID,
 		&requestedDevice.MACAddress,
 		&requestedDevice.CreatedAt,
+		&requestedDevice.Active,
 	); err != nil {
 		return nil, err
 	}

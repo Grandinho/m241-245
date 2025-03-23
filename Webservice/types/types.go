@@ -72,6 +72,7 @@ type RequestDevice struct {
 	ID         int       `json:"id"`
 	MACAddress string    `json:"macAddress"`
 	CreatedAt  time.Time `json:"createdAt"`
+	Active     bool      `json:"active"`
 }
 
 type RequestDevicePayload struct {
