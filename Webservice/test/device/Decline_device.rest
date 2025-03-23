@@ -1,0 +1,2 @@
+DELETE http://localhost:8080/device/request/2
+Content-Type: application/json

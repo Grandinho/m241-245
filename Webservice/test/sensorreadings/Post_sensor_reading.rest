@@ -1,0 +1,11 @@
+POST http://localhost:8080/sensorreading
+Content-Type: application/json
+
+{
+    "DeviceMacAddress": "1",
+    "temperature": 23,
+    "airQualityIndex": 10,
+    "humidity": 78,
+    "carbondioxide": 500
+}
+

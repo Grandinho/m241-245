@@ -3,19 +3,29 @@ USE air_controller_db;
 
 CREATE TABLE devices (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    macAddress VARCHAR(255),
     name VARCHAR(255),
-    localization VARCHAR(255)
+    localization VARCHAR(255),
+    createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY (macAddress)
+);
+
+CREATE TABLE requested_devices (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    macAddress VARCHAR(255),
+    createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    active BOOLEAN,
+    UNIQUE KEY (macAddress)
 );
 
 CREATE TABLE sensor_readings(
     id INT AUTO_INCREMENT PRIMARY KEY,
     deviceId INT NOT NULL,
-    readedAt datetime  NOT NULL,
-    temperature decimal(4,2),
-    humidity TINYINT,
-    pressure DECIMAL(6,2),
-    -- gas_readings not clear yet
-    -- air_quality_index not clear yet
+    temperature decimal(5,2),
+    humidity decimal(5,2),
+    carbondioxide decimal(7,2),
+    airQualityIndex SMALLINT,
+    createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (deviceId) References Devices(id)
 );
 

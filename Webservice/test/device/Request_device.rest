@@ -1,0 +1,6 @@
+POST http://localhost:8080/device/request
+Content-Type: application/json
+
+{
+    "macAddress": "2"
+}
