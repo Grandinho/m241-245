@@ -1,25 +1,18 @@
+import { serverURL } from "@/api/request";
 import type { IDevice } from "./IDevice";
+import axios from 'axios'
 
-export abstract class DeviceApi {
+export class DeviceApi {
 
-    getMovies(): IDevice[] {
-        const devices: IDevice[] = [
-            {
-                id: 1,
-                name: "Sensor 1",
-                localization: "Zimmer 42",
-            }, 
-            {
-                id: 2,
-                name: "Sensor 2",
-                localization: "Zimmer 5",
-            }, 
-            {
-                id: 3,
-                name: "Sensor 3",
-                localization: "Zimmer 1",
-            }
-        ]
-        return devices
+    async getDevices(): Promise<IDevice[]> {
+
+        try {
+            const response = await axios.get(serverURL + '/device')
+            const devices: IDevice[] = response.data
+            return devices
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
     }
 }

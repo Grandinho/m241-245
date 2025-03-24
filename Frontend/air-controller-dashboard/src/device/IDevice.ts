@@ -1,5 +1,7 @@
 export interface IDevice {
-    id?: number;
+    id: number;
     name: string;
     localization: string;
+    macAddress: string;
+    createdAt: Date
 }

@@ -4,6 +4,82 @@ import Devices from '@/components/Devices.vue';
 import Measurement from '@/components/Measurement.vue';
 import History from '@/components/History.vue';
 import DeviceStatus from '@/components/DeviceStatus.vue';
+import { DeviceApi } from '@/device/Device';
+import { onMounted } from 'vue';
+import { ref } from 'vue';
+import type { IDevice } from '@/device/IDevice';
+import type { ISensorReading } from '@/sensorReading/ISensorReading';
+import { SensorReadingApi } from '@/sensorReading/SensorReading';
+import { Title } from 'chart.js';
+
+
+
+const devices = ref(<IDevice[]>[])
+const sensorReadings = ref(<ISensorReading[]>[])
+const newestSensorReading = ref(<ISensorReading>{
+    id: 0,
+    deviceId: 0,
+    airQualityIndex: 0,
+    carbondioxide: 0,
+    humidity: 0,
+    temperature: 0,
+    createdAt: new Date()
+})
+onMounted(() => {
+    loadDevices()
+})
+
+async function loadDevices() {
+    const deviceApi = new DeviceApi();
+
+    try {
+        const stream = await deviceApi.getDevices();
+        devices.value = stream
+        console.log(stream);
+    } catch (error) {
+        console.error('Failed to get devices:', error);
+    }
+}
+
+async function handleChangedevice(newId: number) {
+
+    const sensorReadingApi = new SensorReadingApi()
+
+    try {
+        const stream = await sensorReadingApi.getSensorReadingsByDeviceId(newId);
+        sensorReadings.value = stream
+        console.log(stream)
+    } catch (error) {
+        console.error('Failed to get SensorReadings:', error)
+    }
+
+    if (sensorReadings.value != null) {
+        const sortedReadings: ISensorReading[] = sensorReadings.value.sort((a, b) => {
+            const dateA: number = new Date(a.createdAt).getTime();
+            const dateB: number = new Date(b.createdAt).getTime();
+            return dateB - dateA;
+        })
+
+        console.log(sortedReadings[0])
+
+        newestSensorReading.value = sortedReadings[0]
+    } else {
+        newestSensorReading.value = {
+            id: 0,
+            deviceId: 0,
+            airQualityIndex: 0,
+            carbondioxide: 0,
+            humidity: 0,
+            temperature: 0,
+            createdAt: new Date()
+        };
+    }
+
+    console.log('newest ' + newestSensorReading.value.airQualityIndex)
+
+}
+
+
 </script>
 
 <template>
@@ -11,20 +87,24 @@ import DeviceStatus from '@/components/DeviceStatus.vue';
         <Navigation />
         <header>
             <div>
-                <Devices />
+                <Devices :devices="devices" @changeDevice="handleChangedevice" />
             </div>
             <div class="statistics">
                 <div class="item-1">
-                    <Measurement />
+                    <Measurement :title="'Air-Quality-Index'" :value="newestSensorReading.airQualityIndex" :uom="'AQI'"
+                        :indicator="'TODO'" />
                 </div>
                 <div class="item-2">
-                    <Measurement />
+                    <Measurement :title="'Temperature'" :value="newestSensorReading.temperature" :uom="'°C'"
+                        :indicator="'TODO'" />
                 </div>
                 <div class="item-3">
-                    <Measurement />
+                    <Measurement :title="'Humidity'" :value="newestSensorReading.humidity" :uom="'%'"
+                        :indicator="'TODO'" />
                 </div>
                 <div class="item-4">
-                    <Measurement />
+                    <Measurement :title="'Carbondioxide'" :value="newestSensorReading.carbondioxide" :uom="'ppm'"
+                        :indicator="'TODO'" />
                 </div>
                 <div class="item-5">
                     <History />

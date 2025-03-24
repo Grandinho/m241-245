@@ -1,25 +1,29 @@
-<script setup>
+<script setup lang="ts">
 import { DeviceApi } from '@/device/Device';
 import Device from './Device.vue';
 import { ref } from 'vue';
-import { ExitStatus } from 'typescript';
+import type { IDevice } from '@/device/IDevice';
 
-//TODO LOAD Devices from Webservice
-const apiClinet = new DeviceApi
 
-const devices = apiClinet.getMovies()
+const props = defineProps<{
+    devices: IDevice[]
+}>()
 
-console.log(devices)
+const emit = defineEmits<{
+    (e: 'changeDevice', newId: number): void
+}>()
 
 const selectedId = ref(0)
 
-function switchDevice(id) {
+function switchDevice(id: number) {
     if (selectedId.value == id)
         return;
 
     console.log(id)
     selectedId.value = id
+    emit('changeDevice', id)
 }
+
 
 
 </script>

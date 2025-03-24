@@ -2,8 +2,8 @@ POST http://localhost:8080/device
 Content-Type: application/json
 
 {
-    "macAddress": "2",
-    "name": "Test",
-    "localization": "Test"
+    "macAddress": "3",
+    "name": "Arduino",
+    "localization": "Kitchen"
 }
 

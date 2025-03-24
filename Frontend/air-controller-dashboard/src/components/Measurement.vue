@@ -1,19 +1,26 @@
-<script setup>
+<script setup lang="ts">
+
+const props = defineProps<{
+    title: string;
+    value: number;
+    uom: string
+    indicator: string
+}>()
 
 </script>
 
 <template>
     <div class="measuremnt">
         <div class="header">
-            <div class="title">Air Quality Index</div>
+            <div class="title">{{ title }}</div>
             <button class="options">
                 <img src="../assets/options.png" alt="" class="options-img">
             </button>
         </div>
         <div class="content">
             <div class="value-content">
-                <div class="value">85</div>
-                <div class="indicator">Good</div>
+                <div class="value">{{ value }} {{ uom }}</div>
+                <div class="indicator">{{ indicator }}</div>
             </div>
         </div>
     </div>
