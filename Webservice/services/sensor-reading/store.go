@@ -73,9 +73,9 @@ func scanRowIntoSensorReading(rows *sql.Rows) (*types.SensorReading, error) {
 		&sensorReading.ID,
 		&sensorReading.DeviceId,
 		&sensorReading.Temperature,
-		&sensorReading.AirQualityIndex,
 		&sensorReading.Humidity,
 		&sensorReading.Carbondioxide,
+		&sensorReading.AirQualityIndex,
 		&sensorReading.CreatedAt,
 	)
 
