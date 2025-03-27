@@ -26,7 +26,7 @@ CREATE TABLE sensor_readings(
     carbondioxide decimal(7,2),
     airQualityIndex SMALLINT,
     createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (deviceId) References Devices(id)
+    FOREIGN KEY (deviceId) References devices(id)
 );
 
 CREATE TABLE users(
