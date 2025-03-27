@@ -29,6 +29,7 @@ func initConfig() Config {
 
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
+		fmt.Print("Key " + value)
 		return value
 	}
 	return fallback
