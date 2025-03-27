@@ -15,16 +15,16 @@
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
-const char serverAddress[] = "192.168.19.251";
+const char serverAddress[] = "172.18.12.37";
 const int serverPort = 8080;
 
-const String deviceName = "Arduino BME680";
-const String deviceLocation = "Living Room";
+const String deviceName = "Nano IOT 33";
+const String deviceLocation = "M241 Zimmer";
 
-#define BME_SCK 13
-#define BME_MISO 12
-#define BME_MOSI 11
-#define BME_CS 10
+// #define BME_SCK 13
+// #define BME_MISO 12
+// #define BME_MOSI 11
+// #define BME_CS 10
 #define SEALEVELPRESSURE_HPA (1013.25)
 #define BMP680_I2C_ADDRESS 0x76
 

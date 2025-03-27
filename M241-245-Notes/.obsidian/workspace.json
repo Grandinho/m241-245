@@ -93,12 +93,14 @@
             "id": "da9046cfce4bef62",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "Ext Doku/Kick-Off 30.01.2025 (1).pdf"
+                "file": "Firmware/Arduino.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-file-text",
-              "title": "Kick-Off 30.01.2025 (1)"
+              "icon": "lucide-file",
+              "title": "Arduino"
             }
           },
           {
@@ -272,11 +274,12 @@
   },
   "active": "da9046cfce4bef62",
   "lastOpenFiles": [
-    "Firmware/Arduino.md",
     "Firmware/BME680.md",
-    "Ext Doku/Kick-Off 30.01.2025 (1).pdf",
-    "Publish.md",
     "Quellen.md",
+    "Notes.md",
+    "Ext Doku/Kick-Off 30.01.2025 (1).pdf",
+    "Firmware/Arduino.md",
+    "Publish.md",
     "Webservice/Anforderungen.md",
     "Frontend/Aufbau.md",
     "Database/Aufbau.md",
@@ -289,7 +292,6 @@
     "Frontend/attachments",
     "Pasted image 20250313081109.png",
     "Firmware/attachments",
-    "Notes.md",
     "Ext Doku/M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
     "Database",
     "Ext Doku",
