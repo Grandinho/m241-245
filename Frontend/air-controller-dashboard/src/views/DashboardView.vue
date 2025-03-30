@@ -10,7 +10,6 @@ import { ref } from 'vue';
 import type { IDevice } from '@/device/IDevice';
 import type { ISensorReading } from '@/sensorReading/ISensorReading';
 import { SensorReadingApi } from '@/sensorReading/SensorReading';
-import { Title } from 'chart.js';
 
 
 
@@ -107,7 +106,7 @@ async function handleChangedevice(newId: number) {
                         :indicator="'TODO'" />
                 </div>
                 <div class="item-5">
-                    <History />
+                    <History :sensorReadings="sensorReadings" />
                 </div>
                 <div class="item-6">
                     <DeviceStatus />
