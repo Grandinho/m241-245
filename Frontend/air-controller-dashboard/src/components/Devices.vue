@@ -47,7 +47,6 @@ function switchDevice(id: number) {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 6px;
 }
 
 .devices {

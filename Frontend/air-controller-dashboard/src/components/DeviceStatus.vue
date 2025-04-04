@@ -35,7 +35,7 @@
     border-radius: 8px;
     border: 0px solid #E5E7EB;
     background: #FFF;
-    height: 100%;
+    height: 500px;
 }
 
 .header {
