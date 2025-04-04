@@ -77,7 +77,8 @@ body {
 .buttons {
     display: flex;
     margin-top: 10%;
-    gap: 50px;
+    justify-content: space-evenly;
+    width: 100%;
 }
 
 .form-button {
