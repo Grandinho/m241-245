@@ -30,6 +30,27 @@ export class DeviceApi {
         }
     }
 
+    async declineDevice(declinedDevice: IRequestedDevice): Promise<IError | null> {
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+        try {
+            const data = { "macAddress": declinedDevice.macAddress };
+            const response = await axios.post(serverURL + '/device/request/decline', data, { headers: headers })
+            if (response.status != 201) {
+                return {
+                    message: response.data,
+                    status: response.status
+                }
+            } else {
+                return null
+            }
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+
     async createDevice(device: IDevice): Promise<IError | null> {
         const headers = {
             'Content-Type': 'application/json'

@@ -65,6 +65,17 @@ function HandleCloseCreation() {
     acceptNotification.value = false
 }
 
+
+async function DeclineDevice(declindedDevice: IRequestedDevice) {
+    const deviceApi = new DeviceApi()
+    const response = deviceApi.declineDevice(declindedDevice)
+    if (response == null) {
+        await loadRequestedDevices()
+    } else {
+        // TODO implement error handling
+    }
+}
+
 </script>
 
 <template>
@@ -90,7 +101,8 @@ function HandleCloseCreation() {
                                 <div class="permit">
                                     <img src="../assets/accept.png" alt="accept" class="accept-img"
                                         v-on:click="OpenCreateDevice(requestedDevice)">
-                                    <img src="../assets/delete.png" alt="delete" class="delete-img">
+                                    <img src="../assets/delete.png" alt="delete" class="delete-img"
+                                        v-on:click="DeclineDevice(requestedDevice)">
                                 </div>
                             </div>
                         </div>
