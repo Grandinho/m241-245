@@ -1,4 +1,14 @@
 
 - [ ] Login Page
-- [ ] Notification for Requests
-- [ ] 
+- [x] Notification for Requests
+- [ ] Mesurements indexes
+- [ ] Mesurements colors
+- [ ] connected devices slider
+- [ ] responsive design
+- [ ] device status data sending
+	- [ ] check if arduino can obtain device status like (connection/battery
+- [ ] history data min max values adjust 
+- [ ] nginx reverse proxy
+- [ ] certificates (https)
+- [ ] adjust arduino code to work with requests
+- [ ] intervals in arduino code

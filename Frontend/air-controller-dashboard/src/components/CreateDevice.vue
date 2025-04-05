@@ -1,4 +1,41 @@
-<script lang="ts">
+<script setup lang="ts">
+import type { IDevice } from '@/device/IDevice';
+import { onMounted, ref } from 'vue';
+import Device from './Device.vue';
+import { DeviceApi } from '@/device/Device';
+
+
+const device = ref(<IDevice>{})
+
+
+const emit = defineEmits<{
+    (e: 'close'): void
+}>()
+
+const props = defineProps<
+    {
+        macAddress: string;
+    }>()
+
+
+onMounted(() => {
+    device.value.macAddress = props.macAddress
+})
+
+function close() {
+    emit('close')
+}
+
+async function handleSubmit() {
+    const deviceApi = new DeviceApi()
+    const respone = await deviceApi.createDevice(device.value)
+    if (respone == null) {
+        close()
+        window.location.reload()
+    } else {
+        // TODO implement error handling
+    }
+}
 
 </script>
 
@@ -6,24 +43,25 @@
     <div class="container">
         <div class="form-container">
             <h3>Add New Device</h3>
-            <form class="form" v-on:submit="">
+            <form class="form" v-on:submit.prevent="handleSubmit()">
                 <div class="form-item">
                     <label for="macAddress" class="form-label">MAC-Address</label>
                     <input type="text" id="macAddress" name="macAddress" class="form-input"
-                        placeholder="Enter device MAC-Address...">
+                        placeholder="Enter device MAC-Address..." v-model="device.macAddress" disabled>
                 </div>
                 <div class="form-item">
                     <label for="name" class="form-label">Name</label>
-                    <input type="text" id="name" name="name" class="form-input" placeholder="Enter device Name...">
+                    <input type="text" id="name" name="name" class="form-input" placeholder="Enter device Name..."
+                        v-model="device.name">
                 </div>
                 <div class="form-item">
                     <label for="localization" class="form-label">Localization</label>
                     <input type="text" id="localization" name="localization" class="form-input"
-                        placeholder="Enter device localization...">
+                        placeholder="Enter device localization..." v-model="device.localization">
                 </div>
                 <div class="buttons">
                     <button type="submit" class="form-button">Add device</button>
-                    <button type="button" class="form-button">Cancel</button>
+                    <button type="button" class="form-button" @click="close()">Cancel</button>
                 </div>
             </form>
         </div>

@@ -7,6 +7,7 @@ import CreateDevice from '@/components/CreateDevice.vue';
 const showNotification = ref(false)
 const showNotificationRef = ref<HTMLElement | null>(null);
 const requestedDevices = ref(<IRequestedDevice[]>[])
+const selectedDevice = ref(<IRequestedDevice>{})
 const acceptNotification = ref(false)
 
 onMounted(() => {
@@ -55,6 +56,15 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
     return new Intl.DateTimeFormat(undefined, formattingOptions).format(dateObject);
 }
 
+function OpenCreateDevice(requestedDevice: IRequestedDevice) {
+    acceptNotification.value = true
+    selectedDevice.value = requestedDevice
+}
+
+function HandleCloseCreation() {
+    acceptNotification.value = false
+}
+
 </script>
 
 <template>
@@ -79,7 +89,7 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
                                 </div>
                                 <div class="permit">
                                     <img src="../assets/accept.png" alt="accept" class="accept-img"
-                                        v-on:click="acceptNotification = true">
+                                        v-on:click="OpenCreateDevice(requestedDevice)">
                                     <img src="../assets/delete.png" alt="delete" class="delete-img">
                                 </div>
                             </div>
@@ -90,7 +100,7 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
             </div>
         </div>
     </nav>
-    <CreateDevice v-if="acceptNotification" />
+    <CreateDevice v-if="acceptNotification" :macAddress="selectedDevice.macAddress" @close="HandleCloseCreation()" />
 </template>
 
 <style scoped>
