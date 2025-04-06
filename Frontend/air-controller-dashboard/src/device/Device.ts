@@ -37,7 +37,7 @@ export class DeviceApi {
         try {
             const data = { "macAddress": declinedDevice.macAddress };
             const response = await axios.post(serverURL + '/device/request/decline', data, { headers: headers })
-            if (response.status != 201) {
+            if (response.status != 200) {
                 return {
                     message: response.data,
                     status: response.status

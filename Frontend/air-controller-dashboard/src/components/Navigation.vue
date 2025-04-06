@@ -68,7 +68,7 @@ function HandleCloseCreation() {
 
 async function DeclineDevice(declindedDevice: IRequestedDevice) {
     const deviceApi = new DeviceApi()
-    const response = deviceApi.declineDevice(declindedDevice)
+    const response = await deviceApi.declineDevice(declindedDevice)
     if (response == null) {
         await loadRequestedDevices()
     } else {
