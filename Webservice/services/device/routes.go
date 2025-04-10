@@ -20,9 +20,11 @@ func NewHandler(store types.DeviceStore) *Handler {
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/device", h.handleGet).Methods("GET")
 	router.HandleFunc("/device", h.handlePost).Methods("POST")
+	router.HandleFunc("/device", h.handleOptions).Methods("OPTIONS")
 	router.HandleFunc("/device/request", h.handleGetRequestedDevices).Methods("GET")
 	router.HandleFunc("/device/request", h.handleRequest).Methods("POST")
 	router.HandleFunc("/device/request/decline", h.handleDeclinedRequest).Methods("POST")
+	router.HandleFunc("/device/request/decline", h.handleOptions).Methods("OPTIONS")
 }
 
 func (h *Handler) handleGet(w http.ResponseWriter, r *http.Request) {
@@ -93,4 +95,11 @@ func (h *Handler) handleDeclinedRequest(w http.ResponseWriter, r *http.Request) 
 	}
 
 	utils.WriteJSON(w, http.StatusOK, nil)
+}
+
+func (h *Handler) handleOptions(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.WriteHeader(http.StatusOK)
 }

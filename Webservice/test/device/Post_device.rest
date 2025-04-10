@@ -2,7 +2,7 @@ POST http://localhost:8080/device
 Content-Type: application/json
 
 {
-    "macAddress": "3",
+    "macAddress": "AA:BB:CC:DD:EE:06",
     "name": "Arduino",
     "localization": "Kitchen"
 }

@@ -241,6 +241,7 @@ watch(() => props.sensorReadings, (newVal, oldVal) => {
   border-radius: 8px;
   border: 0px solid #E5E7EB;
   width: 95%;
+  height: 500px;
 }
 
 .header {
@@ -255,7 +256,7 @@ watch(() => props.sensorReadings, (newVal, oldVal) => {
   border: 0px solid #E5E7EB;
   background: #F9FAFB;
   width: 100%;
-  height: 400px;
+  height: 95%;
   position: relative;
 }
 

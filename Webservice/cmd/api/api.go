@@ -40,6 +40,7 @@ func (s *APIServer) Run() error {
 	sensorReadingHandler.RegisterRoutes(router)
 
 	log.Println("listening on", s.addr)
+	log.Println("Adjusted ports")
 	return http.ListenAndServe(s.addr, router)
 }
 
@@ -48,13 +49,8 @@ func enableCORS(next http.Handler) http.Handler {
 		// Set CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		// Handle preflight requests
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		next.ServeHTTP(w, r)
 	})

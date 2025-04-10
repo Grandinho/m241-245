@@ -125,14 +125,14 @@ async function handleChangedevice(newId: number) {
 }
 
 header {
-    padding: 12px 24px;
+    padding: 0px 24px;
 }
 
 .statistics {
     display: grid;
     gap: 20px;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1.5fr;
+    grid-template-rows: 1fr 2fr;
 }
 
 .item-1 {

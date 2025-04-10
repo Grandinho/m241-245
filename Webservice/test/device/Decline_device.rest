@@ -1,2 +1,6 @@
-DELETE http://localhost:8080/device/request/2
+POST http://localhost:8080/device/request/decline
 Content-Type: application/json
+
+{
+    "macAddress": "2/22312"
+}
