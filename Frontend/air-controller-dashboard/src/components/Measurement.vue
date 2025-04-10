@@ -55,12 +55,14 @@ const props = defineProps<{
 }
 
 button {
-    border: 0px solid #E5E7EB;filter: brightness(0) saturate(100%) invert(32%) sepia(20%) saturate(7222%) hue-rotate(344deg) brightness(106%) contrast(91%);
+    border: 0px solid #E5E7EB;
     background: rgba(0, 0, 0, 0.00);
 }
 
 
-
+.options {
+    filter: brightness(0) saturate(100%) invert(44%) sepia(99%) saturate(1457%) hue-rotate(330deg) brightness(100%) contrast(93%);;
+}
 .options-img:hover {
     filter: invert(52%) sepia(100%) saturate(6061%) hue-rotate(217deg) brightness(95%) contrast(93%);
     cursor: pointer;

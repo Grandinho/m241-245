@@ -86,7 +86,7 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
             </div>
         </div>
     </nav>
-    <CreateDevice />
+    <!-- <CreateDevice /> -->
 </template>
 
 <style scoped>
@@ -152,7 +152,7 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
   background: white;
   border: 1px solid #E5E7EB;
   border-radius: 4px;
-  margin-top: 10px;
+  margin-top: 16px;
   margin-right: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;

@@ -1,19 +1,14 @@
-/***************************************************************************
-  Arduino BME680 Sensor Demo with HTTP POST requests
-  - Reads sensor data from BME680 (temperature, humidity, pressure, gas)
-  - Makes HTTP POST requests to register device and send sensor readings
- ***************************************************************************/
-
-#include <Wire.h>
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <ArduinoHttpClient.h>
-#include <Adafruit_Sensor.h>
-#include "Adafruit_BME680.h"
 #include "arduino_secrets.h"
+#include "bsec.h"
 
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
+
+void checkIaqSensorStatus(void);
+void errLeds(void);
 
 const char serverAddress[] = "172.18.12.37";
 const int serverPort = 8080;
@@ -21,14 +16,9 @@ const int serverPort = 8080;
 const String deviceName = "Nano IOT 33";
 const String deviceLocation = "M241 Zimmer";
 
-// #define BME_SCK 13
-// #define BME_MISO 12
-// #define BME_MOSI 11
-// #define BME_CS 10
-#define SEALEVELPRESSURE_HPA (1013.25)
-#define BMP680_I2C_ADDRESS 0x76
+Bsec iaqSensor;
+String output;
 
-Adafruit_BME680 bme(&Wire);
 
 int status = WL_IDLE_STATUS;
 WiFiClient wifiClient;
@@ -42,23 +32,23 @@ const unsigned long sensorReadingInterval = 10000;
 
 void setup()
 {
-    Serial.begin(9600);
-    while (!Serial)
-        ;
-    Serial.println(F("BME680 + HTTP POST Demo"));
-
-    if (!bme.begin())
-    {
-        Serial.println("Could not find a valid BME680 sensor, check wiring!");
-        while (1)
-            ;
-    }
-
-    bme.setTemperatureOversampling(BME680_OS_8X);
-    bme.setHumidityOversampling(BME680_OS_2X);
-    bme.setPressureOversampling(BME680_OS_4X);
-    bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
-    bme.setGasHeater(320, 150); // 320°C for 150 ms
+    iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
+    output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
+    Serial.println(output);
+    checkIaqSensorStatus();
+  
+    bsec_virtual_sensor_t sensorList[4] = {
+      BSEC_OUTPUT_IAQ,
+      BSEC_OUTPUT_CO2_EQUIVALENT,
+      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
+      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY
+    };
+  
+    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
+    checkIaqSensorStatus();
+  
+    output = "Timestamp [ms], IAQ, IAQ accuracy, Static IAQ, CO2 equivalent, breath VOC equivalent, raw temp[°C], pressure [hPa], raw relative humidity [%], gas [Ohm], Stab Status, run in status, comp temp[°C], comp humidity [%], gas percentage";
+    Serial.println(output);
 
     connectToWiFi();
 
@@ -242,24 +232,25 @@ void registerDevice()
 
 void sendSensorReading()
 {
-    Serial.println("\nReading sensor data...");
-
-    if (!bme.performReading())
-    {
-        Serial.println("Failed to perform reading!");
-        return;
+    unsigned long time_trigger = millis();
+    if (iaqSensor.run()) { // If new data is available
+      digitalWrite(LED_BUILTIN, LOW);
+      output = String(time_trigger);
+      output += ", " + String(iaqSensor.iaq);
+      output += ", " + String(iaqSensor.co2Equivalent);
+      output += ", " + String(iaqSensor.temperature);
+      output += ", " + String(iaqSensor.humidity);
+      Serial.println(output);
+      digitalWrite(LED_BUILTIN, HIGH);
+    } else {
+      checkIaqSensorStatus();
     }
 
-    printSensorReadings();
-
-    int airQualityIndex = random(0, 500);  // Random AQI between 0-500
-    int carbonDioxide = random(400, 2000); // Random CO2 between 400-2000 ppm
-
     String jsonData = "{\"DeviceMacAddress\":\"" + macAddress +
-                      "\",\"temperature\":" + String(bme.temperature) +
-                      ",\"humidity\":" + String(bme.humidity) +
-                      ",\"airQualityIndex\":" + String(airQualityIndex) +
-                      ",\"carbondioxide\":" + String(carbonDioxide) + "}";
+                      "\",\"temperature\":" + String(iaqSensor.temperature) +
+                      ",\"humidity\":" + String(iaqSensor.humidity) +
+                      ",\"airQualityIndex\":" + String(iaqSensor.iaq) +
+                      ",\"carbondioxide\":" + String(iaqSensor.co2Equivalent) + "}";
 
     Serial.println("Sending sensor data...");
     Serial.println(jsonData);
@@ -288,27 +279,4 @@ void sendSensorReading()
     {
         Serial.println("Failed to send sensor data");
     }
-}
-
-void printSensorReadings()
-{
-    Serial.print("Temperature = ");
-    Serial.print(bme.temperature);
-    Serial.println(" *C");
-
-    Serial.print("Pressure = ");
-    Serial.print(bme.pressure / 100.0);
-    Serial.println(" hPa");
-
-    Serial.print("Humidity = ");
-    Serial.print(bme.humidity);
-    Serial.println(" %");
-
-    Serial.print("Gas = ");
-    Serial.print(bme.gas_resistance / 1000.0);
-    Serial.println(" KOhms");
-
-    Serial.print("Approx. Altitude = ");
-    Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
-    Serial.println(" m");
 }
