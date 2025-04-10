@@ -105,7 +105,10 @@ const getChartData = computed(() => {
         borderColor: "blue",
         backgroundColor: "rgba(0, 0, 255, 0.1)",
         fill: true,
-        tension: 0.4
+        tension: 0.8,
+        min: -10,
+        max: 50,
+        pointRadius: 0
       },
       humidity: {
         label: "Humidity (%)",
@@ -113,7 +116,10 @@ const getChartData = computed(() => {
         borderColor: "green",
         backgroundColor: "rgba(0, 255, 0, 0.1)",
         fill: true,
-        tension: 0.4
+        tension: 0.8,
+        min: 0,
+        max: 100,
+        pointRadius: 0
       },
       carbondioxide: {
         label: "CO₂ (ppm)",
@@ -121,7 +127,10 @@ const getChartData = computed(() => {
         borderColor: "red",
         backgroundColor: "rgba(255, 0, 0, 0.1)",
         fill: true,
-        tension: 0.4
+        tension: 0.8,
+        min: 0,
+        max: 5000,
+        pointRadius: 0
       },
       airQualityIndex: {
         label: "Air Quality",
@@ -129,7 +138,10 @@ const getChartData = computed(() => {
         borderColor: "purple",
         backgroundColor: "rgba(128, 0, 128, 0.1)",
         fill: true,
-        tension: 0.4
+        tension: 0.8,
+        min: 0,
+        max: 500,
+        pointRadius: 0
       }
     }
   };
@@ -174,8 +186,8 @@ const updateChart = () => {
             legend: { display: true },
           },
           scales: {
-            x: { title: { display: true, text: "Uhrzeit" } },
-            y: { title: { display: true, text: chartData.datasets[selectedDataset.value]?.label || "" } },
+            x: { title: { display: true, text: "Timestamp" } },
+            y: { title: { display: true, text: chartData.datasets[selectedDataset.value]?.label || "" }, min: chartData.datasets[selectedDataset.value].min, max: chartData.datasets[selectedDataset.value].max},
           },
         },
       });

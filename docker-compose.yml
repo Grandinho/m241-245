@@ -30,17 +30,17 @@ services:
       - DB_PORT=3306
     networks:
       - app-network
-  # vue-app:
-  #   build: 
-  #     context: ./Frontend/air-controller-dashboard
-  #   restart: always
-  #   ports:
-  #     - 80:80
-  #   depends_on:
-  #     golang-app:
-  #       condition: service_started
-  #   networks:
-  #     - app-network
+  vue-app:
+    build: 
+      context: ./Frontend/air-controller-dashboard
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      golang-app:
+        condition: service_started
+    networks:
+      - app-network
 
 networks:
   app-network:

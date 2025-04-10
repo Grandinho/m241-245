@@ -3,8 +3,9 @@
 const props = defineProps<{
     title: string;
     value: number;
-    uom: string
-    indicator: string
+    uom: string;
+    indicator: string;
+    date: string;
 }>()
 
 </script>
@@ -20,7 +21,7 @@ const props = defineProps<{
         <div class="content">
             <div class="value-content">
                 <div class="value">{{ value }} {{ uom }}</div>
-                <div class="indicator">{{ indicator }}</div>
+                <div class="indicator">{{ date }}</div>
             </div>
         </div>
     </div>

@@ -95,12 +95,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Firmware/Arduino.md",
+                "file": "Firmware/BME680.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Arduino"
+              "title": "BME680"
             }
           },
           {
@@ -274,9 +274,9 @@
   },
   "active": "da9046cfce4bef62",
   "lastOpenFiles": [
+    "Firmware/Arduino.md",
     "TODO.md",
     "Database/Aufbau.md",
-    "Firmware/Arduino.md",
     "Firmware/BME680.md",
     "Quellen.md",
     "Notes.md",

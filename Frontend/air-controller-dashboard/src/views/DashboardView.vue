@@ -26,7 +26,13 @@ const newestSensorReading = ref(<ISensorReading>{
 })
 onMounted(() => {
     loadDevices()
+    window.setInterval(() => {
+        if (currentDeviceId.value != 0) {
+            handleChangedevice(currentDeviceId.value)
+        } 
+    }, 60000)
 })
+const currentDeviceId = ref(<number>0)
 
 async function loadDevices() {
     const deviceApi = new DeviceApi();
@@ -43,7 +49,7 @@ async function loadDevices() {
 async function handleChangedevice(newId: number) {
 
     const sensorReadingApi = new SensorReadingApi()
-
+    currentDeviceId.value = newId
     try {
         const stream = await sensorReadingApi.getSensorReadingsByDeviceId(newId);
         sensorReadings.value = stream
@@ -78,6 +84,25 @@ async function handleChangedevice(newId: number) {
 
 }
 
+function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
+    const dateObject = date instanceof Date ? date : new Date(date);
+    if (isNaN(dateObject.getTime())) {
+        console.error('Invalid date:', date);
+        return 'Invalid date';
+    }
+
+    const defaultOptions: Intl.DateTimeFormatOptions = {
+        year: "2-digit",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true // Use 12-hour format with AM/PM
+    };
+    const formattingOptions = options || defaultOptions;
+    return new Intl.DateTimeFormat(undefined, formattingOptions).format(dateObject);
+}
+
 
 </script>
 
@@ -91,19 +116,19 @@ async function handleChangedevice(newId: number) {
             <div class="statistics">
                 <div class="item-1">
                     <Measurement :title="'Air-Quality-Index'" :value="newestSensorReading.airQualityIndex" :uom="'AQI'"
-                        :indicator="'TODO'" />
+                        :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
                 <div class="item-2">
                     <Measurement :title="'Temperature'" :value="newestSensorReading.temperature" :uom="'°C'"
-                        :indicator="'TODO'" />
+                        :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
                 <div class="item-3">
                     <Measurement :title="'Humidity'" :value="newestSensorReading.humidity" :uom="'%'"
-                        :indicator="'TODO'" />
+                        :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
                 <div class="item-4">
                     <Measurement :title="'Carbondioxide'" :value="newestSensorReading.carbondioxide" :uom="'ppm'"
-                        :indicator="'TODO'" />
+                        :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
                 <div class="item-5">
                     <History :sensorReadings="sensorReadings" />
