@@ -9,7 +9,7 @@ char pass[] = SECRET_PASS;
 
 void checkIaqSensorStatus(void);
 
-const char serverAddress[] = "192.168.210.251";
+const char serverAddress[] = "192.168.156.222";
 const int serverPort = 8080;
 
 const String deviceName = "Nano IOT 33";
@@ -26,6 +26,7 @@ String macAddress = "";
 
 bool deviceRequested = false;
 bool deviceRegistered = false;
+bool deviceDeclined = false;
 unsigned long lastSensorReadingTime = 0;
 const unsigned long sensorReadingInterval = 30000;
 
@@ -36,21 +37,21 @@ void setup()
     Serial.println(output);
     checkIaqSensorStatus();
   
-  bsec_virtual_sensor_t sensorList[13] = {
-    BSEC_OUTPUT_IAQ,
-    BSEC_OUTPUT_STATIC_IAQ,
-    BSEC_OUTPUT_CO2_EQUIVALENT,
-    BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
-    BSEC_OUTPUT_RAW_TEMPERATURE,
-    BSEC_OUTPUT_RAW_PRESSURE,
-    BSEC_OUTPUT_RAW_HUMIDITY,
-    BSEC_OUTPUT_RAW_GAS,
-    BSEC_OUTPUT_STABILIZATION_STATUS,
-    BSEC_OUTPUT_RUN_IN_STATUS,
-    BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
-    BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
-    BSEC_OUTPUT_GAS_PERCENTAGE
-  };
+    bsec_virtual_sensor_t sensorList[13] = {
+        BSEC_OUTPUT_IAQ,
+        BSEC_OUTPUT_STATIC_IAQ,
+        BSEC_OUTPUT_CO2_EQUIVALENT,
+        BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
+        BSEC_OUTPUT_RAW_TEMPERATURE,
+        BSEC_OUTPUT_RAW_PRESSURE,
+        BSEC_OUTPUT_RAW_HUMIDITY,
+        BSEC_OUTPUT_RAW_GAS,
+        BSEC_OUTPUT_STABILIZATION_STATUS,
+        BSEC_OUTPUT_RUN_IN_STATUS,
+        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
+        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
+        BSEC_OUTPUT_GAS_PERCENTAGE
+    };
   
     iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
     checkIaqSensorStatus();
@@ -61,10 +62,21 @@ void setup()
     connectToWiFi();
 
     macAddress = getMACAddress();
+    deviceRegistered = isDeviceRegistered();
+
+    if(!deviceRegistered) {
+      requestDevice();
+    }
 }
 
 void loop()
 {
+    if (deviceDeclined) {
+      Serial.println("The device has been declined. Sensor data are going to be readed but not send.");
+      readSensorData();
+      return;
+    }
+
     if (WiFi.status() != WL_CONNECTED)
     {
         Serial.println("WiFi connection lost. Reconnecting...");
@@ -75,15 +87,6 @@ void loop()
     if (!deviceRequested)
     {
         requestDevice();
-        deviceRequested = true;
-        delay(3000);
-        return;
-    }
-
-    if (!deviceRegistered)
-    {
-        registerDevice();
-        deviceRegistered = true;
         delay(3000);
         return;
     }
@@ -202,22 +205,21 @@ void requestDevice()
     }
     else
     {
-        Serial.println("Device request failed");
+        if(response == "device already registered") {
+          deviceRegistered = true;
+        } 
+        else if (response == "device was declined") {
+          deviceDeclined = true;
+        }
     }
 }
 
-void registerDevice()
+bool isDeviceRegistered()
 {
-    Serial.println("\nRegistering device...");
-
-    String jsonData = "{\"macAddress\":\"" + macAddress + "\",\"name\":\"" + deviceName + "\",\"localization\":\"" + deviceLocation + "\"}";
+    Serial.println("\Checking if device registered...");
 
     httpClient.beginRequest();
-    httpClient.post("/device");
-    httpClient.sendHeader("Content-Type", "application/json");
-    httpClient.sendHeader("Content-Length", jsonData.length());
-    httpClient.beginBody();
-    httpClient.print(jsonData);
+    httpClient.get("/device/" + macAddress);
     httpClient.endRequest();
 
     int statusCode = httpClient.responseStatusCode();
@@ -230,15 +232,15 @@ void registerDevice()
 
     if (statusCode >= 200 && statusCode < 300)
     {
-        Serial.println("Device registration successful");
+        return true;
     }
     else
     {
-        Serial.println("Device registration failed");
+        return false;
     }
 }
 
-void sendSensorReading()
+void readSensorData()
 {
     unsigned long time_trigger = millis();
     if (iaqSensor.run()) { // If new data is available
@@ -263,7 +265,11 @@ void sendSensorReading()
     } else {
       checkIaqSensorStatus();
     }
+}
 
+void sendSensorReading()
+{
+    readSensorData();
     String jsonData = "{\"DeviceMacAddress\":\"" + macAddress +
                       "\",\"temperature\":" + String(iaqSensor.temperature) +
                       ",\"humidity\":" + String(iaqSensor.humidity) +

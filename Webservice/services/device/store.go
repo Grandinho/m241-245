@@ -113,8 +113,34 @@ func (s *Store) GetRequestedDevices() ([]*types.RequestDevice, error) {
 	return requestedDevices, nil
 }
 
+func (s *Store) GetRequestedDevicesByMac(macAddress string) (*types.RequestDevice, error) {
+	rows, err := s.db.Query("SELECT * FROM requested_devices where macAddress = ?", macAddress)
+
+	if err != nil {
+		return nil, err
+	}
+
+	requestedDevice := new(types.RequestDevice)
+	for rows.Next() {
+		requestedDevice, err = ScanRowsIntoRequestedDevice(rows)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return requestedDevice, nil
+}
+
 func (s *Store) DeactivateDevice(macAddress string) error {
 	if _, err := s.db.Exec("UPDATE requested_devices SET active = false where macAddress = ?", macAddress); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Store) DeleteRequestDevice(macAddress string) error {
+	if _, err := s.db.Exec("DELETE from requested_devices where macAddress = ?", macAddress); err != nil {
 		return err
 	}
 

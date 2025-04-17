@@ -133,9 +133,9 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
                 <div class="item-5">
                     <History :sensorReadings="sensorReadings" />
                 </div>
-                <div class="item-6">
+                <!-- <div class="item-6">
                     <DeviceStatus />
-                </div>
+                </div> -->
             </div>
         </header>
     </div>
@@ -190,7 +190,7 @@ header {
 
 .item-5 {
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: 5;
     grid-row-start: 2;
     grid-row-end: 2;
 }

@@ -95,12 +95,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Firmware/BME680.md",
+                "file": "Firmware/Arduino.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "BME680"
+              "title": "Arduino"
             }
           },
           {
@@ -274,26 +274,26 @@
   },
   "active": "da9046cfce4bef62",
   "lastOpenFiles": [
+    "Firmware/BME680.md",
     "Firmware/Arduino.md",
     "TODO.md",
+    "Ext Doku/M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
+    "Ext Doku/M241-Block 02 (Problemdefinition und Zielgruppenanalyse) V1.0.pdf",
+    "Ext Doku/M241-Block 03 (Marktforschung und Validierung von Lösungsansätzen) V1.0.pdf",
+    "Frontend/Aufbau.md",
     "Database/Aufbau.md",
-    "Firmware/BME680.md",
     "Quellen.md",
     "Notes.md",
     "Ext Doku/Kick-Off 30.01.2025 (1).pdf",
     "Publish.md",
     "Webservice/Anforderungen.md",
-    "Frontend/Aufbau.md",
     "Firmware/attachments/Pasted image 20250313081149.png",
-    "Ext Doku/M241-Block 02 (Problemdefinition und Zielgruppenanalyse) V1.0.pdf",
-    "Ext Doku/M241-Block 03 (Marktforschung und Validierung von Lösungsansätzen) V1.0.pdf",
     "Ext Doku/M241-Block 01 v1.0 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
     "Firmware/attachments/Pasted image 20250313110722.png",
     "Frontend/attachments/Pasted image 20250308090918.png",
     "Frontend/attachments",
     "Pasted image 20250313081109.png",
     "Firmware/attachments",
-    "Ext Doku/M241-Block 01 v1.2 (Kick-Off – Einführung und Gruppeneinteilung).pdf",
     "Database",
     "Ext Doku",
     "Frontend",

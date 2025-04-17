@@ -51,7 +51,9 @@ type DeviceStore interface {
 	GetDeviceById(deviceId int) (*Device, error)
 	GetDeviceByMac(macAddress string) (*Device, error)
 	GetRequestedDevices() ([]*RequestDevice, error)
+	GetRequestedDevicesByMac(macAddress string) (*RequestDevice, error)
 	DeactivateDevice(macAddress string) error
+	DeleteRequestDevice(macAddress string) error
 }
 
 type Device struct {
@@ -77,4 +79,8 @@ type RequestDevice struct {
 
 type RequestDevicePayload struct {
 	MACAddress string `json:"macAddress"`
+}
+
+type Response struct {
+	Message string `json:"message"`
 }
