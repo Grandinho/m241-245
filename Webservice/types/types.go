@@ -20,6 +20,15 @@ type RegisterUserPayload struct {
 	Password string `json:"password"`
 }
 
+type LoginUserPayload struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginToken struct {
+	Token string `json:"token"`
+}
+
 type SensorReadingStore interface {
 	CreateSensorReading(sensorReading SensorReadingPayload, deviceId int) error
 	GetSensorReadingsByDevice(deviceId string) ([]*SensorReading, error)

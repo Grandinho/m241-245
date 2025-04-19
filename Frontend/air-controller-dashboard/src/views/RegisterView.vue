@@ -1,102 +1,109 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { AuthService } from '@/services/AuthService';
 
 const username = ref('');
 const password = ref('');
-const rememberMe = ref(false);
+const confirmPassword = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
+const successMessage = ref('');
 const router = useRouter();
 
-async function handleLogin() {
-    if (!username.value || !password.value) {
-        errorMessage.value = 'Username and password are required';
+async function handleRegister() {
+    if (!username.value || !password.value || !confirmPassword.value) {
+        errorMessage.value = 'All fields are required';
         return;
     }
 
+    if (password.value !== confirmPassword.value) {
+        errorMessage.value = 'Passwords do not match';
+        return;
+    }
+
+    if (password.value.length < 6) {
+        errorMessage.value = 'Password must be at least 6 characters';
+        return;
+    }
     try {
         isLoading.value = true;
         errorMessage.value = '';
+        successMessage.value = '';
 
-        const response = await AuthService.login({
+        const response = await AuthService.register({
             username: username.value,
-            password: password.value
+            password: password.value,
         });
 
         if (response.success) {
-            if (rememberMe.value) {
-                localStorage.setItem('rememberedUser', username.value);
-            } else {
-                localStorage.removeItem('rememberedUser');
-            }
+            successMessage.value = 'Registration successful! Redirecting to login...';
 
-            router.push('/dashboard');
+            username.value = '';
+            password.value = '';
+            confirmPassword.value = '';
+
+            setTimeout(() => {
+                router.push('/login');
+            }, 2000);
         } else {
-            errorMessage.value = response.message || 'Authentication failed';
+            errorMessage.value = response.message || 'Registration failed';
         }
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Registration error:', error);
         errorMessage.value = 'Connection error. Please check your network and try again.';
     } finally {
         isLoading.value = false;
     }
 }
 
-function goToRegister() {
-    router.push('/register');
+function goToLogin() {
+    router.push('/login');
 }
-
-onMounted(() => {
-    const rememberedUser = localStorage.getItem('rememberedUser');
-    if (rememberedUser) {
-        username.value = rememberedUser;
-        rememberMe.value = true;
-    }
-});
 </script>
 
 <template>
-    <div class="login-container">
-        <div class="login-card">
+    <div class="register-container">
+        <div class="register-card">
             <div class="header">
                 <h1>Air Controller</h1>
-                <p>Login to your account</p>
+                <p>Create a new account</p>
             </div>
 
-            <form @submit.prevent="handleLogin" class="login-form">
+            <form @submit.prevent="handleRegister" class="register-form">
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input id="username" v-model="username" type="text" placeholder="Enter your username"
+                    <input id="username" v-model="username" type="text" placeholder="Choose a username"
                         autocomplete="username" />
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input id="password" v-model="password" type="password" placeholder="Enter your password"
-                        autocomplete="current-password" />
+                    <input id="password" v-model="password" type="password" placeholder="Create a password"
+                        autocomplete="new-password" />
                 </div>
 
-                <div class="options-row">
-                    <div class="remember-me">
-                        <input id="remember" type="checkbox" v-model="rememberMe" />
-                        <label for="remember">Remember me</label>
-                    </div>
-                    <a href="#" class="forgot-password">Forgot password?</a>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input id="confirm-password" v-model="confirmPassword" type="password"
+                        placeholder="Confirm your password" autocomplete="new-password" />
                 </div>
 
                 <div v-if="errorMessage" class="error-message">
                     {{ errorMessage }}
                 </div>
 
-                <button type="submit" class="login-button" :disabled="isLoading">
-                    <span v-if="isLoading">Logging in...</span>
-                    <span v-else>Login</span>
+                <div v-if="successMessage" class="success-message">
+                    {{ successMessage }}
+                </div>
+
+                <button type="submit" class="register-button" :disabled="isLoading">
+                    <span v-if="isLoading">Registering...</span>
+                    <span v-else>Register</span>
                 </button>
 
-                <div class="register-link">
-                    Don't have an account? <a href="#" @click.prevent="goToRegister">Register</a>
+                <div class="login-link">
+                    Already have an account? <a href="#" @click.prevent="goToLogin">Login</a>
                 </div>
             </form>
         </div>
@@ -104,7 +111,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.login-container {
+.register-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -113,7 +120,7 @@ onMounted(() => {
     padding: 16px;
 }
 
-.login-card {
+.register-card {
     width: 100%;
     max-width: 420px;
     padding: 32px;
@@ -139,7 +146,7 @@ onMounted(() => {
     color: #6B7280;
 }
 
-.login-form {
+.register-form {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -175,39 +182,6 @@ onMounted(() => {
     color: #9CA3AF;
 }
 
-.options-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.remember-me {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.remember-me input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: #2563EB;
-}
-
-.remember-me label {
-    font-size: 14px;
-    color: #4B5563;
-}
-
-.forgot-password {
-    font-size: 14px;
-    color: #2563EB;
-    text-decoration: none;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
-}
-
 .error-message {
     padding: 10px;
     background-color: #FEE2E2;
@@ -216,7 +190,15 @@ onMounted(() => {
     font-size: 14px;
 }
 
-.login-button {
+.success-message {
+    padding: 10px;
+    background-color: #DCFCE7;
+    border-radius: 6px;
+    color: #15803D;
+    font-size: 14px;
+}
+
+.register-button {
     background-color: #2563EB;
     color: white;
     border: none;
@@ -228,40 +210,34 @@ onMounted(() => {
     transition: background-color 0.2s;
 }
 
-.login-button:hover {
+.register-button:hover {
     background-color: #1D4ED8;
 }
 
-.login-button:disabled {
+.register-button:disabled {
     background-color: #93C5FD;
     cursor: not-allowed;
 }
 
-.register-link {
+.login-link {
     text-align: center;
     font-size: 14px;
     color: #4B5563;
 }
 
-.register-link a {
+.login-link a {
     color: #2563EB;
     text-decoration: none;
     font-weight: 500;
 }
 
-.register-link a:hover {
+.login-link a:hover {
     text-decoration: underline;
 }
 
 @media (max-width: 480px) {
-    .login-card {
+    .register-card {
         padding: 24px;
-    }
-
-    .options-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
     }
 }
 </style>

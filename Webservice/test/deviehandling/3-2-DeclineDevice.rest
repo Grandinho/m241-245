@@ -1,5 +1,6 @@
 POST http://localhost:8080/device/request/decline
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDUxNTAxMjAsInN1YiI6NH0.gJzgumm4j1k5njX8kjmN2a0ZeSSb-GpOu_R4dxeUrJA
 
 {
     "macAddress": "2"

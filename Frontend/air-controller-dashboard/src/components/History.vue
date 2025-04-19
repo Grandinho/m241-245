@@ -187,7 +187,7 @@ const updateChart = () => {
           },
           scales: {
             x: { title: { display: true, text: "Timestamp" } },
-            y: { title: { display: true, text: chartData.datasets[selectedDataset.value]?.label || "" }, min: chartData.datasets[selectedDataset.value].min, max: chartData.datasets[selectedDataset.value].max},
+            y: { title: { display: true, text: chartData.datasets[selectedDataset.value]?.label || "" }, min: chartData.datasets[selectedDataset.value].min, max: chartData.datasets[selectedDataset.value].max },
           },
         },
       });

@@ -1,22 +1,31 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { AuthService } from '@/services/AuthService';
 import { DeviceApi } from '@/device/Device';
 import type { IRequestedDevice } from '@/device/IRequestedDevice';
-import { onMounted, onUnmounted, ref } from 'vue';
 import CreateDevice from '@/components/CreateDevice.vue';
 
-const showNotification = ref(false)
+const router = useRouter();
+const username = computed(() => AuthService.getCurrentUser() || 'User');
+const isAuthenticated = computed(() => AuthService.isAuthenticated());
+
+const showNotification = ref(false);
 const showNotificationRef = ref<HTMLElement | null>(null);
-const requestedDevices = ref(<IRequestedDevice[]>[])
-const selectedDevice = ref(<IRequestedDevice>{})
-const acceptNotification = ref(false)
+const requestedDevices = ref(<IRequestedDevice[]>[]);
+const selectedDevice = ref(<IRequestedDevice>{});
+const acceptNotification = ref(false);
 
 onMounted(() => {
-    loadRequestedDevices()
+    console.log(isAuthenticated.value)
+    if (isAuthenticated.value) {
+        loadRequestedDevices();
+    }
     document.addEventListener("click", handleClickOutside);
-})
+});
 
 onUnmounted(() => {
-    document.addEventListener("click", handleClickOutside);
+    document.removeEventListener("click", handleClickOutside);
 });
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -26,15 +35,25 @@ const handleClickOutside = (event: MouseEvent) => {
 };
 
 async function loadRequestedDevices() {
-    const deviceApi = new DeviceApi();
+    if (!isAuthenticated.value) return;
 
+    const deviceApi = new DeviceApi();
     try {
         const stream = await deviceApi.getRequestedDevices();
-        requestedDevices.value = stream
-        console.log("Requested devices: " + requestedDevices.value);
+        requestedDevices.value = stream;
+        console.log("Requested devices: ", requestedDevices.value);
     } catch (error) {
         console.error('Failed to get devices:', error);
     }
+}
+
+function handleLogin() {
+    router.push('/login');
+}
+
+function handleLogout() {
+    AuthService.logout();
+    router.push('/login');
 }
 
 function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
@@ -50,32 +69,30 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
         day: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true // Use 12-hour format with AM/PM
+        hour12: true
     };
     const formattingOptions = options || defaultOptions;
     return new Intl.DateTimeFormat(undefined, formattingOptions).format(dateObject);
 }
 
 function OpenCreateDevice(requestedDevice: IRequestedDevice) {
-    acceptNotification.value = true
-    selectedDevice.value = requestedDevice
+    acceptNotification.value = true;
+    selectedDevice.value = requestedDevice;
 }
 
 function HandleCloseCreation() {
-    acceptNotification.value = false
+    acceptNotification.value = false;
 }
 
-
 async function DeclineDevice(declindedDevice: IRequestedDevice) {
-    const deviceApi = new DeviceApi()
-    const response = await deviceApi.declineDevice(declindedDevice)
+    const deviceApi = new DeviceApi();
+    const response = await deviceApi.declineDevice(declindedDevice);
     if (response == null) {
-        await loadRequestedDevices()
+        await loadRequestedDevices();
     } else {
         // TODO implement error handling
     }
 }
-
 </script>
 
 <template>
@@ -85,9 +102,10 @@ async function DeclineDevice(declindedDevice: IRequestedDevice) {
                 <img src="../assets/logo.svg" alt="logo" class="logo-img">
                 <h3>IoT Dashboard</h3>
             </div>
-            <div class="account">
+
+            <div v-if="isAuthenticated" class="account">
                 <div class="notification-container">
-                    <img src="../assets/notification.svg" alt="account" ref="showNotificationRef"
+                    <img src="../assets/notification.svg" alt="notification" ref="showNotificationRef"
                         class="notification-img" @click="showNotification = !showNotification">
                     <div class="notification-menu" v-if="showNotification">
                         <div v-for="requestedDevice in requestedDevices" :key="requestedDevice.id">
@@ -106,9 +124,20 @@ async function DeclineDevice(declindedDevice: IRequestedDevice) {
                                 </div>
                             </div>
                         </div>
+                        <div v-if="requestedDevices.length === 0" class="no-notifications">
+                            No pending device requests
+                        </div>
                     </div>
                 </div>
-                <img src="../assets/account-placeholder.jpg" alt="account" class="account-img">
+                <div class="user-profile">
+                    <div class="user-dropdown">
+                        <button @click="handleLogout" class="logout-button">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else class="login-container">
+                <button @click="handleLogin" class="login-button">Login</button>
             </div>
         </div>
     </nav>
@@ -147,6 +176,34 @@ nav {
     height: 24px;
 }
 
+.account {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+
+
+.user-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 8px;
+}
+
+.username {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+}
+
 .account-img {
     width: 32px;
     height: 32px;
@@ -161,16 +218,15 @@ nav {
     flex-shrink: 0;
     border-radius: 9999px;
     border: 0px solid #E5E7EB;
+    cursor: pointer;
 }
 
 .notification-img:hover {
     filter: invert(52%) sepia(100%) saturate(6061%) hue-rotate(217deg) brightness(95%) contrast(93%);
 }
 
-.account {
-    display: flex;
-    gap: 20px;
-    align-items: center;
+.notification-container {
+    position: relative;
 }
 
 .notification-menu {
@@ -183,13 +239,14 @@ nav {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 10;
     right: 0;
+    min-width: 350px;
 }
 
 .requested-device {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 350px;
+    width: 95%;
     padding: 10px 10px 10px 5px;
     border-bottom: 1px solid #E5E7EB;
     gap: 5px;
@@ -220,6 +277,7 @@ nav {
 .accept-img {
     width: 24px;
     height: 24px;
+    cursor: pointer;
 }
 
 .accept-img:hover {
@@ -229,9 +287,56 @@ nav {
 .delete-img {
     width: 24px;
     height: 24px;
+    cursor: pointer;
 }
 
 .delete-img:hover {
     filter: brightness(0) saturate(100%) invert(32%) sepia(20%) saturate(7222%) hue-rotate(344deg) brightness(106%) contrast(91%);
+}
+
+.no-notifications {
+    padding: 15px;
+    text-align: center;
+    color: #6B7280;
+    font-size: 14px;
+}
+
+/* Login button styles */
+.login-container {
+    display: flex;
+    align-items: center;
+}
+
+.login-button {
+    background-color: #2563EB;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #1D4ED8;
+}
+
+/* Logout button styles */
+.logout-button {
+    background-color: transparent;
+    color: #EF4444;
+    border: 1px solid #EF4444;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logout-button:hover {
+    background-color: #FEE2E2;
 }
 </style>

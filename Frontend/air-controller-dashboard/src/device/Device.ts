@@ -1,16 +1,16 @@
-import { serverURL } from "@/api/request";
 import type { IDevice } from "./IDevice";
 import axios from 'axios'
 import type { IRequestedDevice } from "./IRequestedDevice";
 import { server } from "typescript";
 import type { IError } from "@/api/IError";
+import apiClient from "@/services/HttpService";
 
 export class DeviceApi {
 
     async getDevices(): Promise<IDevice[]> {
 
         try {
-            const response = await axios.get(serverURL + '/device')
+            const response = await apiClient.get('/device')
             const devices: IDevice[] = response.data
             return devices
         } catch (error) {
@@ -21,7 +21,7 @@ export class DeviceApi {
 
     async getRequestedDevices(): Promise<IRequestedDevice[]> {
         try {
-            const response = await axios.get(serverURL + '/device/request')
+            const response = await apiClient.get('/device/request/')
             const requestedDevices: IRequestedDevice[] = response.data
             return requestedDevices
         } catch (error) {
@@ -36,7 +36,7 @@ export class DeviceApi {
         }
         try {
             const data = { "macAddress": declinedDevice.macAddress };
-            const response = await axios.post(serverURL + '/device/request/decline', data, { headers: headers })
+            const response = await axios.post('/device/request/decline', data, { headers: headers })
             if (response.status != 200) {
                 return {
                     message: response.data,
@@ -56,7 +56,7 @@ export class DeviceApi {
             'Content-Type': 'application/json'
         }
         try {
-            const response = await axios.post(serverURL + '/device', device, { headers: headers })
+            const response = await axios.post('/device', device, { headers: headers })
             if (response.status != 201) {
                 return {
                     message: response.data,

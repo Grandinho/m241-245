@@ -1,5 +1,5 @@
 
-- [ ] Login Page
+- [x] Login Page
 - [x] Notification for Requests
 - [ ] Mesurements indexes
 - [ ] Mesurements colors

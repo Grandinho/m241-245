@@ -1,6 +1,7 @@
 package device
 
 import (
+	"air-controller-webservice/middleware"
 	"air-controller-webservice/types"
 	"air-controller-webservice/utils"
 	"fmt"
@@ -20,13 +21,17 @@ func NewHandler(store types.DeviceStore) *Handler {
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/device", h.handleGet).Methods("GET")
 	router.HandleFunc("/device/{macId}", h.handleGetByMac).Methods("GET")
-	router.HandleFunc("/device", h.handlePost).Methods("POST")
 	router.HandleFunc("/device", h.handleOptions).Methods("OPTIONS")
-	router.HandleFunc("/device/request", h.handleGetRequestedDevices).Methods("GET")
+	router.HandleFunc("/device/request/", h.handleGetRequestedDevices).Methods("GET")
+	router.HandleFunc("/device/request/", h.handleOptions).Methods("OPTIONS")
 	router.HandleFunc("/device/request/{macId}", h.handleGetRequestedDevicesByMac).Methods("GET")
 	router.HandleFunc("/device/request", h.handleRequest).Methods("POST")
-	router.HandleFunc("/device/request/decline", h.handleDeclinedRequest).Methods("POST")
-	router.HandleFunc("/device/request/decline", h.handleOptions).Methods("OPTIONS")
+
+	middlewareRouter := router.NewRoute().Subrouter()
+	middlewareRouter.HandleFunc("/device", h.handlePost).Methods("POST")
+	middlewareRouter.HandleFunc("/device/request/decline", h.handleDeclinedRequest).Methods("POST")
+	middlewareRouter.HandleFunc("/device/request/decline", h.handleOptions).Methods("OPTIONS")
+	middlewareRouter.Use(middleware.RequireAuth())
 }
 
 func (h *Handler) handleGet(w http.ResponseWriter, r *http.Request) {
@@ -157,7 +162,7 @@ func (h *Handler) handleDeclinedRequest(w http.ResponseWriter, r *http.Request) 
 
 func (h *Handler) handleOptions(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.WriteHeader(http.StatusOK)
 }

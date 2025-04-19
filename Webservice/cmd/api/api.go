@@ -25,7 +25,6 @@ func NewAPIServer(addr string, db *sql.DB) *APIServer {
 
 func (s *APIServer) Run() error {
 	router := mux.NewRouter()
-	router.Use(enableCORS)
 
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
@@ -38,6 +37,7 @@ func (s *APIServer) Run() error {
 	sensorReadingStore := sensorreading.NewStore(s.db)
 	sensorReadingHandler := sensorreading.NewHandler(sensorReadingStore, s.db)
 	sensorReadingHandler.RegisterRoutes(router)
+	router.Use(enableCORS)
 
 	log.Println("listening on", s.addr)
 	log.Println("Adjusted ports")

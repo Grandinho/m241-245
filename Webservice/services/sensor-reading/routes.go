@@ -24,6 +24,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/sensorreading", h.handleGet).Methods("GET")
 	router.HandleFunc("/sensorreading/device/{deviceId}", h.handleGetByDeviceId).Methods("GET")
 	router.HandleFunc("/sensorreading", h.handlePost).Methods("POST")
+	router.HandleFunc("/sensorreading", h.handleOptions).Methods("OPTIONS")
 }
 
 func (h *Handler) handleGet(w http.ResponseWriter, r *http.Request) {
@@ -78,4 +79,11 @@ func (h *Handler) handlePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusCreated, nil)
+}
+
+func (h *Handler) handleOptions(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.WriteHeader(http.StatusOK)
 }

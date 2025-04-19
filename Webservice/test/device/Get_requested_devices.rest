@@ -1,1 +1,2 @@
-GET http://localhost:8080/device/request
+GET http://localhost:8080/device/request/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDUxNTIyOTQsInN1YiI6NH0.USUEg-_P2zToKZPayfDuygEvXm9CmXtnzrBVc1_Y1hs

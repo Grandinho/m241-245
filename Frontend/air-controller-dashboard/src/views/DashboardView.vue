@@ -10,6 +10,7 @@ import { ref } from 'vue';
 import type { IDevice } from '@/device/IDevice';
 import type { ISensorReading } from '@/sensorReading/ISensorReading';
 import { SensorReadingApi } from '@/sensorReading/SensorReading';
+import Statistics from '@/components/Statistics.vue';
 
 
 
@@ -29,7 +30,7 @@ onMounted(() => {
     window.setInterval(() => {
         if (currentDeviceId.value != 0) {
             handleChangedevice(currentDeviceId.value)
-        } 
+        }
     }, 60000)
 })
 const currentDeviceId = ref(<number>0)
@@ -131,11 +132,18 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
                         :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
                 <div class="item-5">
-                    <History :sensorReadings="sensorReadings" />
+                    <Statistics :sensorReadings="sensorReadings" dataType="airQualityIndex"
+                        title="Air Quality History" />
                 </div>
-                <!-- <div class="item-6">
-                    <DeviceStatus />
-                </div> -->
+                <div class="item-6">
+                    <Statistics :sensorReadings="sensorReadings" dataType="temperature" title="Temperature History" />
+                </div>
+                <div class="item-7">
+                    <Statistics :sensorReadings="sensorReadings" dataType="humidity" title="Humidity History" />
+                </div>
+                <div class="item-8">
+                    <Statistics :sensorReadings="sensorReadings" dataType="carbondioxide" title="CO₂ History" />
+                </div>
             </div>
         </header>
     </div>
@@ -157,7 +165,7 @@ header {
     display: grid;
     gap: 20px;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 2fr;
+    grid-template-rows: 1fr 1.4fr;
 }
 
 .item-1 {
@@ -190,12 +198,26 @@ header {
 
 .item-5 {
     grid-column-start: 1;
-    grid-column-end: 5;
+    grid-column-end: 1;
     grid-row-start: 2;
     grid-row-end: 2;
 }
 
 .item-6 {
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.item-7 {
+    grid-column-start: 3;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.item-8 {
     grid-column-start: 4;
     grid-column-end: 4;
     grid-row-start: 2;

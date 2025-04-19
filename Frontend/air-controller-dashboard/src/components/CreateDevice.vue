@@ -42,7 +42,7 @@ async function handleSubmit() {
 <template>
     <div class="container">
         <div class="form-container">
-            <h3>Add New Device</h3>
+            <h3 class="form-title">Add New Device</h3>
             <form class="form" v-on:submit.prevent="handleSubmit()">
                 <div class="form-item">
                     <label for="macAddress" class="form-label">MAC-Address</label>
@@ -61,105 +61,170 @@ async function handleSubmit() {
                 </div>
                 <div class="buttons">
                     <button type="submit" class="form-button">Add device</button>
-                    <button type="button" class="form-button" @click="close()">Cancel</button>
+                    <button type="button" class="form-button cancel-button" @click="close()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
-
 </template>
 
-<style>
-html,
-body {
-    margin: 0;
-    height: 100%;
-    /* overflow: hidden */
-}
-
+<style scoped>
 .container {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-    margin: 0px;
-    padding: 0px;
-    overflow: hidden;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
 }
 
 .form-container {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 20%;
-    height: 45%;
+    position: relative;
+    width: 90%;
+    max-width: 450px;
     background-color: #F9FAFB;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
     border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 24px;
+    margin: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-title {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #1F2937;
+    font-size: 1.25rem;
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin: 20px;
-    gap: 10px;
     width: 100%;
+    gap: 16px;
 }
 
 .buttons {
     display: flex;
-    margin-top: 10%;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    margin-top: 24px;
     width: 100%;
+    gap: 12px;
 }
 
 .form-button {
-    width: 110px;
-    height: 35px;
-    border: 2px solid #2563EB;
-    border-radius: 5px;
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
     background-color: #2563EB;
-    color: #F9FAFB;
+    color: white;
     font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
 .form-button:hover {
-    background-color: #256FFB;
-    color: #F9FAAA;
+    background-color: #1D4ED8;
+}
+
+.form-button:active {
+    transform: translateY(1px);
+}
+
+.cancel-button {
+    background-color: #F3F4F6;
+    color: #4B5563;
+    border: 1px solid #D1D5DB;
+}
+
+.cancel-button:hover {
+    background-color: #E5E7EB;
+    color: #1F2937;
 }
 
 .form-item {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    width: 80%;
+    gap: 6px;
+    width: 100%;
 }
 
 .form-label {
-    font-size: 12px;
-    color: #A9A9A9;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4B5563;
 }
 
 .form-input {
-    border: none;
-    border-radius: 5px;
-    height: 30px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border: 2px solid #F9FAFB;
+    padding: 10px 12px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: white;
 }
 
 .form-input:focus {
     outline: none;
-    border: 2px solid #2563EB;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-input:disabled {
+    background-color: #F3F4F6;
+    cursor: not-allowed;
 }
 
 .form-input::placeholder {
-    color: lightgray;
+    color: #9CA3AF;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .form-container {
+        width: 95%;
+        padding: 16px;
+    }
+
+    .form-title {
+        font-size: 1.125rem;
+        margin-bottom: 16px;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .form-button {
+        width: 100%;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .form-container {
+        width: 80%;
+        max-width: 500px;
+    }
+}
+
+@media (min-height: 600px) {
+    .form-container {
+        max-height: 450px;
+    }
+}
+
+@media (max-height: 599px) {
+    .form-container {
+        max-height: 90vh;
+    }
 }
 </style>
