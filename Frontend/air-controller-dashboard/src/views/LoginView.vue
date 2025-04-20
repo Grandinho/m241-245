@@ -48,6 +48,10 @@ function goToRegister() {
     router.push('/register');
 }
 
+function goToDashboard() {
+    router.push('/dashboard');
+}
+
 onMounted(() => {
     const rememberedUser = localStorage.getItem('rememberedUser');
     if (rememberedUser) {
@@ -83,7 +87,7 @@ onMounted(() => {
                         <input id="remember" type="checkbox" v-model="rememberMe" />
                         <label for="remember">Remember me</label>
                     </div>
-                    <a href="#" class="forgot-password">Forgot password?</a>
+                    <a @click.prevent="goToDashboard" class="forward-dashboard">Go to Dashboard</a>
                 </div>
 
                 <div v-if="errorMessage" class="error-message">
@@ -198,13 +202,14 @@ onMounted(() => {
     color: #4B5563;
 }
 
-.forgot-password {
+.forward-dashboard {
     font-size: 14px;
     color: #2563EB;
     text-decoration: none;
+    cursor: pointer;
 }
 
-.forgot-password:hover {
+.forward-dashboard:hover {
     text-decoration: underline;
 }
 
