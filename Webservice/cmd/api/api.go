@@ -25,6 +25,7 @@ func NewAPIServer(addr string, db *sql.DB) *APIServer {
 
 func (s *APIServer) Run() error {
 	router := mux.NewRouter()
+	router.Use(enableCORS)
 
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
@@ -37,7 +38,6 @@ func (s *APIServer) Run() error {
 	sensorReadingStore := sensorreading.NewStore(s.db)
 	sensorReadingHandler := sensorreading.NewHandler(sensorReadingStore, s.db)
 	sensorReadingHandler.RegisterRoutes(router)
-	router.Use(enableCORS)
 
 	log.Println("listening on", s.addr)
 	log.Println("Adjusted ports")
@@ -46,11 +46,15 @@ func (s *APIServer) Run() error {
 
 func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
 		next.ServeHTTP(w, r)
 	})

@@ -47,7 +47,7 @@ async function loadRequestedDevices() {
     }
 }
 
-function handleLogin() {
+async function handleLogin() {
     router.push('/login');
 }
 
@@ -323,7 +323,6 @@ nav {
     background-color: #1D4ED8;
 }
 
-/* Logout button styles */
 .logout-button {
     background-color: transparent;
     color: #EF4444;

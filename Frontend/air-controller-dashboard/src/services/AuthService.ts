@@ -143,14 +143,14 @@ export class AuthService {
         }
     }
 
-    static async logout(): Promise<void> {
-        try {
-            await apiClient.post('/logout', {});
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            this.clearAuthData();
-        }
+    static logout(): void {
+        // try {
+        //     await apiClient.post('/logout', {});
+        // } catch (error) {
+        //     console.error('Logout error:', error);
+        // } finally {
+        this.clearAuthData();
+        // }
     }
 
     private static clearAuthData(): void {

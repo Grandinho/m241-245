@@ -175,7 +175,7 @@ onUnmounted(() => {
 });
 
 const updateChart = () => {
-    if (chartRef.value && props.sensorReadings.length > 0) {
+    if (props.sensorReadings != null && chartRef.value && props.sensorReadings.length > 0) {
         const ctx = chartRef.value.getContext("2d");
         if (ctx) {
             if (chartInstance) {
@@ -248,11 +248,14 @@ const updateChart = () => {
                 },
             });
         }
+    } else {
+        chartInstance?.destroy()
     }
 };
 
 watch(() => props.sensorReadings, (newVal, oldVal) => {
     if (newVal !== oldVal) {
+        console.log('test')
         updateChart();
     }
 }, { deep: true });
@@ -277,7 +280,7 @@ watch(() => [filterByDay.value, filterByWeek.value, filterByMonth.value], () => 
         </div>
         <div class="content">
             <canvas ref="chartRef"></canvas>
-            <div v-if="props.sensorReadings.length === 0" class="no-data">
+            <div v-if="props.sensorReadings == null || props.sensorReadings.length === 0" class="no-data">
                 No sensor data available
             </div>
         </div>

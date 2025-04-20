@@ -18,7 +18,6 @@ const String deviceLocation = "M241 Zimmer";
 Bsec iaqSensor;
 String output;
 
-
 int status = WL_IDLE_STATUS;
 WiFiClient wifiClient;
 HttpClient httpClient = HttpClient(wifiClient, serverAddress, serverPort);
@@ -32,296 +31,314 @@ const unsigned long sensorReadingInterval = 30000;
 
 void setup()
 {
-    iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
-    output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
-    Serial.println(output);
-    checkIaqSensorStatus();
-  
-    bsec_virtual_sensor_t sensorList[13] = {
-        BSEC_OUTPUT_IAQ,
-        BSEC_OUTPUT_STATIC_IAQ,
-        BSEC_OUTPUT_CO2_EQUIVALENT,
-        BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
-        BSEC_OUTPUT_RAW_TEMPERATURE,
-        BSEC_OUTPUT_RAW_PRESSURE,
-        BSEC_OUTPUT_RAW_HUMIDITY,
-        BSEC_OUTPUT_RAW_GAS,
-        BSEC_OUTPUT_STABILIZATION_STATUS,
-        BSEC_OUTPUT_RUN_IN_STATUS,
-        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
-        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
-        BSEC_OUTPUT_GAS_PERCENTAGE
-    };
-  
-    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
-    checkIaqSensorStatus();
-  
-    output = "Timestamp [ms], IAQ, IAQ accuracy, Static IAQ, CO2 equivalent, breath VOC equivalent, raw temp[°C], pressure [hPa], raw relative humidity [%], gas [Ohm], Stab Status, run in status, comp temp[°C], comp humidity [%], gas percentage";
-    Serial.println(output);
+  iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
+  output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
+  Serial.println(output);
+  checkIaqSensorStatus();
 
-    connectToWiFi();
+  bsec_virtual_sensor_t sensorList[13] = {
+      BSEC_OUTPUT_IAQ,
+      BSEC_OUTPUT_STATIC_IAQ,
+      BSEC_OUTPUT_CO2_EQUIVALENT,
+      BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
+      BSEC_OUTPUT_RAW_TEMPERATURE,
+      BSEC_OUTPUT_RAW_PRESSURE,
+      BSEC_OUTPUT_RAW_HUMIDITY,
+      BSEC_OUTPUT_RAW_GAS,
+      BSEC_OUTPUT_STABILIZATION_STATUS,
+      BSEC_OUTPUT_RUN_IN_STATUS,
+      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
+      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
+      BSEC_OUTPUT_GAS_PERCENTAGE};
 
-    macAddress = getMACAddress();
-    deviceRegistered = isDeviceRegistered();
+  iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
+  checkIaqSensorStatus();
 
-    if(!deviceRegistered) {
-      requestDevice();
-    }
+  output = "Timestamp [ms], IAQ, IAQ accuracy, Static IAQ, CO2 equivalent, breath VOC equivalent, raw temp[°C], pressure [hPa], raw relative humidity [%], gas [Ohm], Stab Status, run in status, comp temp[°C], comp humidity [%], gas percentage";
+  Serial.println(output);
+
+  connectToWiFi();
+
+  macAddress = getMACAddress();
+  deviceRegistered = isDeviceRegistered();
+
+  if (!deviceRegistered)
+  {
+    requestDevice();
+  }
 }
 
 void loop()
 {
-    if (deviceDeclined) {
-      Serial.println("The device has been declined. Sensor data are going to be readed but not send.");
-      readSensorData();
-      return;
-    }
-
-    if (WiFi.status() != WL_CONNECTED)
-    {
-        Serial.println("WiFi connection lost. Reconnecting...");
-        connectToWiFi();
-        return;
-    }
-
-    if (!deviceRequested)
-    {
-        requestDevice();
-        delay(3000);
-        return;
-    }
-
+  if (deviceDeclined)
+  {
+    Serial.println("The device has been declined. Sensor data are going to be readed but not send.");
     unsigned long currentTime = millis();
     if (currentTime - lastSensorReadingTime >= sensorReadingInterval)
     {
-        sendSensorReading();
-        lastSensorReadingTime = currentTime;
+      readSensorData();
+      lastSensorReadingTime = currentTime;
     }
+    return;
+  }
+
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.println("WiFi connection lost. Reconnecting...");
+    connectToWiFi();
+    return;
+  }
+
+  if (!deviceRequested)
+  {
+    requestDevice();
+    delay(3000);
+    return;
+  }
+
+  unsigned long currentTime = millis();
+  if (currentTime - lastSensorReadingTime >= sensorReadingInterval)
+  {
+    sendSensorReading();
+    lastSensorReadingTime = currentTime;
+  }
 }
 
 void connectToWiFi()
 {
-    if (WiFi.status() == WL_NO_MODULE)
-    {
-        Serial.println("Communication with WiFi module failed!");
-        while (true)
-            ;
-    }
+  if (WiFi.status() == WL_NO_MODULE)
+  {
+    Serial.println("Communication with WiFi module failed!");
+    while (true)
+      ;
+  }
 
-    Serial.print("Connecting to WiFi network: ");
-    Serial.println(ssid);
+  Serial.print("Connecting to WiFi network: ");
+  Serial.println(ssid);
 
-    status = WiFi.begin(ssid, pass);
+  status = WiFi.begin(ssid, pass);
 
-    unsigned long startTime = millis();
-    while (status != WL_CONNECTED && millis() - startTime < 10000)
-    {
-        Serial.print(".");
-        delay(500);
-        status = WiFi.status();
-    }
-    Serial.println();
+  unsigned long startTime = millis();
+  while (status != WL_CONNECTED && millis() - startTime < 10000)
+  {
+    Serial.print(".");
+    delay(500);
+    status = WiFi.status();
+  }
+  Serial.println();
 
-    if (status == WL_CONNECTED)
-    {
-        Serial.println("Connected to WiFi");
-        printWiFiStatus();
-    }
-    else
-    {
-        Serial.println("Failed to connect to WiFi. Retrying...");
-    }
+  if (status == WL_CONNECTED)
+  {
+    Serial.println("Connected to WiFi");
+    printWiFiStatus();
+  }
+  else
+  {
+    Serial.println("Failed to connect to WiFi. Retrying...");
+  }
 }
 
 void printWiFiStatus()
 {
-    Serial.print("SSID: ");
-    Serial.println(WiFi.SSID());
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
 
-    IPAddress ip = WiFi.localIP();
-    Serial.print("IP Address: ");
-    Serial.println(ip);
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
 
-    long rssi = WiFi.RSSI();
-    Serial.print("Signal strength (RSSI): ");
-    Serial.print(rssi);
-    Serial.println(" dBm");
+  long rssi = WiFi.RSSI();
+  Serial.print("Signal strength (RSSI): ");
+  Serial.print(rssi);
+  Serial.println(" dBm");
 
-    Serial.print("MAC Address: ");
-    Serial.println(macAddress);
+  Serial.print("MAC Address: ");
+  Serial.println(macAddress);
 }
 
 String getMACAddress()
 {
-    byte mac[6];
-    WiFi.macAddress(mac);
+  byte mac[6];
+  WiFi.macAddress(mac);
 
-    String macStr = "";
-    for (int i = 5; i >= 0; i--)
+  String macStr = "";
+  for (int i = 5; i >= 0; i--)
+  {
+    if (mac[i] < 16)
     {
-        if (mac[i] < 16)
-        {
-            macStr += "0";
-        }
-        macStr += String(mac[i], HEX);
-        if (i > 0)
-        {
-            macStr += ":";
-        }
+      macStr += "0";
     }
+    macStr += String(mac[i], HEX);
+    if (i > 0)
+    {
+      macStr += ":";
+    }
+  }
 
-    macStr.toUpperCase();
-    Serial.print("MAC Address: ");
-    Serial.println(macStr);
+  macStr.toUpperCase();
+  Serial.print("MAC Address: ");
+  Serial.println(macStr);
 
-    return macStr;
+  return macStr;
 }
 
 void requestDevice()
 {
-    Serial.println("\nRequesting device...");
+  Serial.println("\nRequesting device...");
 
-    String jsonData = "{\"macAddress\":\"" + macAddress + "\"}";
+  String jsonData = "{\"macAddress\":\"" + macAddress + "\"}";
 
-    httpClient.beginRequest();
-    httpClient.post("/device/request");
-    httpClient.sendHeader("Content-Type", "application/json");
-    httpClient.sendHeader("Content-Length", jsonData.length());
-    httpClient.beginBody();
-    httpClient.print(jsonData);
-    httpClient.endRequest();
+  httpClient.beginRequest();
+  httpClient.post("/device/request");
+  httpClient.sendHeader("Content-Type", "application/json");
+  httpClient.sendHeader("Content-Length", jsonData.length());
+  httpClient.beginBody();
+  httpClient.print(jsonData);
+  httpClient.endRequest();
 
-    int statusCode = httpClient.responseStatusCode();
-    String response = httpClient.responseBody();
+  int statusCode = httpClient.responseStatusCode();
+  String response = httpClient.responseBody();
 
-    Serial.print("Status code: ");
-    Serial.println(statusCode);
-    Serial.print("Response: ");
-    Serial.println(response);
+  Serial.print("Status code: ");
+  Serial.println(statusCode);
+  Serial.print("Response: ");
+  Serial.println(response);
 
-    if (statusCode >= 200 && statusCode < 300)
+  if (statusCode >= 200 && statusCode < 300)
+  {
+    Serial.println("Device request successful");
+    deviceRequested = true;
+  }
+  else
+  {
+    if (response == "device already registered")
     {
-        Serial.println("Device request successful");
+      deviceRegistered = true;
     }
-    else
+    else if (response == "device was declined")
     {
-        if(response == "device already registered") {
-          deviceRegistered = true;
-        } 
-        else if (response == "device was declined") {
-          deviceDeclined = true;
-        }
+      deviceDeclined = true;
     }
+  }
 }
 
 bool isDeviceRegistered()
 {
-    Serial.println("\Checking if device registered...");
+  Serial.println("\Checking if device registered...");
 
-    httpClient.beginRequest();
-    httpClient.get("/device/" + macAddress);
-    httpClient.endRequest();
+  httpClient.beginRequest();
+  httpClient.get("/device/" + macAddress);
+  httpClient.endRequest();
 
-    int statusCode = httpClient.responseStatusCode();
-    String response = httpClient.responseBody();
+  int statusCode = httpClient.responseStatusCode();
+  String response = httpClient.responseBody();
 
-    Serial.print("Status code: ");
-    Serial.println(statusCode);
-    Serial.print("Response: ");
-    Serial.println(response);
+  Serial.print("Status code: ");
+  Serial.println(statusCode);
+  Serial.print("Response: ");
+  Serial.println(response);
 
-    if (statusCode >= 200 && statusCode < 300)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+  if (statusCode >= 200 && statusCode < 300)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 void readSensorData()
 {
-    unsigned long time_trigger = millis();
-    if (iaqSensor.run()) { // If new data is available
-      digitalWrite(LED_BUILTIN, LOW);
-      output = String(time_trigger);
-      output += ", " + String(iaqSensor.iaq);
-      output += ", " + String(iaqSensor.iaqAccuracy);
-      output += ", " + String(iaqSensor.staticIaq);
-      output += ", " + String(iaqSensor.co2Equivalent);
-      output += ", " + String(iaqSensor.breathVocEquivalent);
-      output += ", " + String(iaqSensor.rawTemperature);
-      output += ", " + String(iaqSensor.pressure);
-      output += ", " + String(iaqSensor.rawHumidity);
-      output += ", " + String(iaqSensor.gasResistance);
-      output += ", " + String(iaqSensor.stabStatus);
-      output += ", " + String(iaqSensor.runInStatus);
-      output += ", " + String(iaqSensor.temperature);
-      output += ", " + String(iaqSensor.humidity);
-      output += ", " + String(iaqSensor.gasPercentage);
-      Serial.println(output);
-      digitalWrite(LED_BUILTIN, HIGH);
-    } else {
-      checkIaqSensorStatus();
-    }
+  unsigned long time_trigger = millis();
+  if (iaqSensor.run())
+  { // If new data is available
+    output = String(time_trigger);
+    output += ", " + String(iaqSensor.iaq);
+    output += ", " + String(iaqSensor.iaqAccuracy);
+    output += ", " + String(iaqSensor.staticIaq);
+    output += ", " + String(iaqSensor.co2Equivalent);
+    output += ", " + String(iaqSensor.breathVocEquivalent);
+    output += ", " + String(iaqSensor.rawTemperature);
+    output += ", " + String(iaqSensor.pressure);
+    output += ", " + String(iaqSensor.rawHumidity);
+    output += ", " + String(iaqSensor.gasResistance);
+    output += ", " + String(iaqSensor.stabStatus);
+    output += ", " + String(iaqSensor.runInStatus);
+    output += ", " + String(iaqSensor.temperature);
+    output += ", " + String(iaqSensor.humidity);
+    output += ", " + String(iaqSensor.gasPercentage);
+    Serial.println(output);
+  }
+  else
+  {
+    checkIaqSensorStatus();
+  }
 }
 
 void sendSensorReading()
 {
-    readSensorData();
-    String jsonData = "{\"DeviceMacAddress\":\"" + macAddress +
-                      "\",\"temperature\":" + String(iaqSensor.temperature) +
-                      ",\"humidity\":" + String(iaqSensor.humidity) +
-                      ",\"airQualityIndex\":" + String(iaqSensor.iaq) +
-                      ",\"carbondioxide\":" + String(iaqSensor.co2Equivalent) + "}";
+  readSensorData();
+  String jsonData = "{\"DeviceMacAddress\":\"" + macAddress +
+                    "\",\"temperature\":" + String(iaqSensor.temperature) +
+                    ",\"humidity\":" + String(iaqSensor.humidity) +
+                    ",\"airQualityIndex\":" + String(iaqSensor.iaq) +
+                    ",\"carbondioxide\":" + String(iaqSensor.co2Equivalent) + "}";
 
-    Serial.println("Sending sensor data...");
-    Serial.println(jsonData);
+  Serial.println("Sending sensor data...");
+  Serial.println(jsonData);
 
-    httpClient.beginRequest();
-    httpClient.post("/sensorreading");
-    httpClient.sendHeader("Content-Type", "application/json");
-    httpClient.sendHeader("Content-Length", jsonData.length());
-    httpClient.beginBody();
-    httpClient.print(jsonData);
-    httpClient.endRequest();
+  httpClient.beginRequest();
+  httpClient.post("/sensorreading");
+  httpClient.sendHeader("Content-Type", "application/json");
+  httpClient.sendHeader("Content-Length", jsonData.length());
+  httpClient.beginBody();
+  httpClient.print(jsonData);
+  httpClient.endRequest();
 
-    int statusCode = httpClient.responseStatusCode();
-    String response = httpClient.responseBody();
+  int statusCode = httpClient.responseStatusCode();
+  String response = httpClient.responseBody();
 
-    Serial.print("Status code: ");
-    Serial.println(statusCode);
-    Serial.print("Response: ");
-    Serial.println(response);
+  Serial.print("Status code: ");
+  Serial.println(statusCode);
+  Serial.print("Response: ");
+  Serial.println(response);
 
-    if (statusCode >= 200 && statusCode < 300)
-    {
-        Serial.println("Sensor data sent successfully");
-    }
-    else
-    {
-        Serial.println("Failed to send sensor data");
-    }
+  if (statusCode >= 200 && statusCode < 300)
+  {
+    Serial.println("Sensor data sent successfully");
+  }
+  else
+  {
+    Serial.println("Failed to send sensor data");
+  }
 }
 
 void checkIaqSensorStatus(void)
 {
-  if (iaqSensor.bsecStatus != BSEC_OK) {
-    if (iaqSensor.bsecStatus < BSEC_OK) {
+  if (iaqSensor.bsecStatus != BSEC_OK)
+  {
+    if (iaqSensor.bsecStatus < BSEC_OK)
+    {
       output = "BSEC error code : " + String(iaqSensor.bsecStatus);
       Serial.println(output);
-    } else {
+    }
+    else
+    {
       output = "BSEC warning code : " + String(iaqSensor.bsecStatus);
       Serial.println(output);
     }
   }
 
-  if (iaqSensor.bme68xStatus != BME68X_OK) {
-    if (iaqSensor.bme68xStatus < BME68X_OK) {
+  if (iaqSensor.bme68xStatus != BME68X_OK)
+  {
+    if (iaqSensor.bme68xStatus < BME68X_OK)
+    {
       output = "BME68X error code : " + String(iaqSensor.bme68xStatus);
       Serial.println(output);
-    } else {
+    }
+    else
+    {
       output = "BME68X warning code : " + String(iaqSensor.bme68xStatus);
       Serial.println(output);
     }

@@ -23,6 +23,7 @@ func NewHandler(store types.SensorReadingStore, db *sql.DB) *Handler {
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/sensorreading", h.handleGet).Methods("GET")
 	router.HandleFunc("/sensorreading/device/{deviceId}", h.handleGetByDeviceId).Methods("GET")
+	router.HandleFunc("/sensorreading/device/{deviceId}", h.handleOptions).Methods("OPTIONS")
 	router.HandleFunc("/sensorreading", h.handlePost).Methods("POST")
 	router.HandleFunc("/sensorreading", h.handleOptions).Methods("OPTIONS")
 }

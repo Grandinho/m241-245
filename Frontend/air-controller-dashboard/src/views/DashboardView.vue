@@ -2,8 +2,6 @@
 import Navigation from '@/components/Navigation.vue';
 import Devices from '@/components/Devices.vue';
 import Measurement from '@/components/Measurement.vue';
-import History from '@/components/History.vue';
-import DeviceStatus from '@/components/DeviceStatus.vue';
 import { DeviceApi } from '@/device/Device';
 import { onMounted } from 'vue';
 import { ref } from 'vue';
@@ -98,7 +96,7 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
         day: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true // Use 12-hour format with AM/PM
+        hour12: true
     };
     const formattingOptions = options || defaultOptions;
     return new Intl.DateTimeFormat(undefined, formattingOptions).format(dateObject);
@@ -111,37 +109,37 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
     <div class="dashboard">
         <Navigation />
         <header>
-            <div>
+            <div class="devices-container">
                 <Devices :devices="devices" @changeDevice="handleChangedevice" />
             </div>
             <div class="statistics">
-                <div class="item-1">
+                <div class="measurement-card item-1">
                     <Measurement :title="'Air-Quality-Index'" :value="newestSensorReading.airQualityIndex" :uom="'AQI'"
                         :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
-                <div class="item-2">
+                <div class="measurement-card item-2">
                     <Measurement :title="'Temperature'" :value="newestSensorReading.temperature" :uom="'°C'"
                         :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
-                <div class="item-3">
+                <div class="measurement-card item-3">
                     <Measurement :title="'Humidity'" :value="newestSensorReading.humidity" :uom="'%'"
                         :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
-                <div class="item-4">
+                <div class="measurement-card item-4">
                     <Measurement :title="'Carbondioxide'" :value="newestSensorReading.carbondioxide" :uom="'ppm'"
                         :indicator="'TODO'" :date="formatDate(newestSensorReading.createdAt)" />
                 </div>
-                <div class="item-5">
+                <div class="statistics-card item-5">
                     <Statistics :sensorReadings="sensorReadings" dataType="airQualityIndex"
                         title="Air Quality History" />
                 </div>
-                <div class="item-6">
+                <div class="statistics-card item-6">
                     <Statistics :sensorReadings="sensorReadings" dataType="temperature" title="Temperature History" />
                 </div>
-                <div class="item-7">
+                <div class="statistics-card item-7">
                     <Statistics :sensorReadings="sensorReadings" dataType="humidity" title="Humidity History" />
                 </div>
-                <div class="item-8">
+                <div class="statistics-card item-8">
                     <Statistics :sensorReadings="sensorReadings" dataType="carbondioxide" title="CO₂ History" />
                 </div>
             </div>
@@ -155,72 +153,79 @@ function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions) {
     flex-direction: column;
     justify-content: flex-start;
     background: #F9FAFB;
+    width: 100%;
+    min-height: 100vh;
 }
 
 header {
-    padding: 0px 24px;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.devices-container {
+    margin-bottom: 20px;
+    width: 100%;
 }
 
 .statistics {
     display: grid;
-    gap: 20px;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1.4fr;
+    gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(120px, auto);
 }
 
-.item-1 {
-    grid-column-start: 1;
-    grid-column-end: 1;
-    grid-row-start: 1;
-    grid-row-end: 1;
+.measurement-card,
+.statistics-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
 }
 
-.item-2 {
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 1;
-    grid-row-end: 1;
+@media (max-width: 1200px) {
+    .statistics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .item-1,
+    .item-2,
+    .item-3,
+    .item-4,
+    .item-5,
+    .item-6,
+    .item-7,
+    .item-8 {
+        grid-column: auto;
+        grid-row: auto;
+    }
 }
 
-.item-3 {
-    grid-column-start: 3;
-    grid-column-end: 3;
-    grid-row-start: 1;
-    grid-row-end: 1;
+@media (max-width: 768px) {
+    .statistics {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    header {
+        padding: 12px;
+    }
+
+    .measurement-card,
+    .statistics-card {
+        min-height: 100px;
+    }
 }
 
-.item-4 {
-    grid-column-start: 4;
-    grid-column-end: 4;
-    grid-row-start: 1;
-    grid-row-end: 1;
-}
+@media (max-width: 480px) {
+    header {
+        padding: 8px;
+    }
 
-.item-5 {
-    grid-column-start: 1;
-    grid-column-end: 1;
-    grid-row-start: 2;
-    grid-row-end: 2;
-}
-
-.item-6 {
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 2;
-    grid-row-end: 2;
-}
-
-.item-7 {
-    grid-column-start: 3;
-    grid-column-end: 3;
-    grid-row-start: 2;
-    grid-row-end: 2;
-}
-
-.item-8 {
-    grid-column-start: 4;
-    grid-column-end: 4;
-    grid-row-start: 2;
-    grid-row-end: 2;
+    .statistics {
+        gap: 10px;
+    }
 }
 </style>
