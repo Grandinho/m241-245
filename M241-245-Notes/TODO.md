@@ -3,8 +3,8 @@
 - [x] Notification for Requests
 - [x] Mesurements indexes
 - [x] Mesurements colors
-- [ ] connected devices slider
-- [ ] responsive design
+- [x] connected devices slider
+- [x] responsive design
 - [x] delete
 	- [x] device status data sending
 		- [x] check if arduino can obtain device status like (connection/battery
