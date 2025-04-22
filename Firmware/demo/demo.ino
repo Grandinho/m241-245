@@ -27,7 +27,7 @@ bool deviceRequested = false;
 bool deviceRegistered = false;
 bool deviceDeclined = false;
 unsigned long lastSensorReadingTime = 0;
-const unsigned long sensorReadingInterval = 30000;
+const unsigned long sensorReadingInterval = 10000;
 
 void setup()
 {
@@ -36,29 +36,8 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect
   }
-  Serial.println("Scanning I2C bus...");
-    // Initialize I2C bus explicitly
-  Wire.begin();
-  Wire.setClock(100000); // Lower speed for better reliability
-  byte error, address;
-  int deviceCount = 0;
-
-  for(address = 1; address < 127; address++) {
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
-  
-    if (error == 0) {
-      Serial.print("I2C device found at address 0x");
-      if (address < 16) Serial.print("0");
-      Serial.print(address, HEX);
-      Serial.println();
-      deviceCount++;
-    }
-  }
-
-  if (deviceCount == 0) {
-    Serial.println("No I2C devices found");
-  }
+  readI2CBUS();
+ 
 
   iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
   output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
@@ -90,12 +69,15 @@ void setup()
 
   macAddress = getMACAddress();
   Serial.println(macAddress);
-  deviceRegistered = isDeviceRegistered();
 
-  if (!deviceRegistered)
-  {
-    requestDevice();
+  if (WiFi.status() == WL_CONNECTED) {
+    deviceRegistered = isDeviceRegistered();
+    if (!deviceRegistered)
+    {
+      requestDevice();
+    }
   }
+
 }
 
 void loop()
@@ -106,7 +88,10 @@ void loop()
     unsigned long currentTime = millis();
     if (currentTime - lastSensorReadingTime >= sensorReadingInterval)
     {
-      readSensorData();
+      bool isSuccessful = readSensorData();
+      if (!isSuccessful) {
+        readI2CBUS();
+      }
       lastSensorReadingTime = currentTime;
     }
     return;
@@ -119,7 +104,7 @@ void loop()
     return;
   }
 
-  if (!deviceRequested && !deviceRegistered)
+  if (!deviceRequested || !deviceRegistered)
   {
     requestDevice();
     delay(3000);
@@ -244,6 +229,7 @@ void requestDevice()
     if (response.indexOf("device already registered") > -1)
     {
       deviceRegistered = true;
+      deviceRequested = true;
       Serial.println("Device is already registered");
     }
     else if (response.indexOf("device was declined") > -1)
@@ -280,7 +266,7 @@ bool isDeviceRegistered()
   }
 }
 
-void readSensorData()
+bool readSensorData()
 {
   unsigned long time_trigger = millis();
   if (iaqSensor.run())
@@ -301,16 +287,23 @@ void readSensorData()
     output += ", " + String(iaqSensor.humidity);
     output += ", " + String(iaqSensor.gasPercentage);
     Serial.println(output);
+    return true;
   }
   else
   {
     checkIaqSensorStatus();
+    return false;
   }
 }
 
 void sendSensorReading()
 {
-  readSensorData();
+  bool isSuccessful = readSensorData();
+  if (!isSuccessful) {
+    readI2CBUS();
+    return;
+  }
+
   String jsonData = "{\"DeviceMacAddress\":\"" + macAddress +
                     "\",\"temperature\":" + String(iaqSensor.temperature) +
                     ",\"humidity\":" + String(iaqSensor.humidity) +
@@ -374,5 +367,32 @@ void checkIaqSensorStatus(void)
       output = "BME68X warning code : " + String(iaqSensor.bme68xStatus);
       Serial.println(output);
     }
+  }
+}
+
+void readI2CBUS()
+{
+   Serial.println("Scanning I2C bus...");
+    // Initialize I2C bus explicitly
+  Wire.begin();
+  Wire.setClock(100000); // Lower speed for better reliability
+  byte error, address;
+  int deviceCount = 0;
+
+  for(address = 1; address < 127; address++) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+  
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.print(address, HEX);
+      Serial.println();
+      deviceCount++;
+    }
+  }
+
+  if (deviceCount == 0) {
+    Serial.println("No I2C devices found");
   }
 }
