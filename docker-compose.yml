@@ -1,71 +1,49 @@
-version: '3.8'
+# version: '3.8'
 
 services:
-  # Frontend service
-  frontend:
-    build:
-      context: ./Frontend/air-controller-dashboard
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    networks:
-      - app-network
-
-  # Backend webservice
-  webservice:
-    build:
-      context: ./Webservice
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    depends_on:
-      - mariadb
-    networks:
-      - app-network
-
-  # MariaDB service
   mariadb:
-    image: mariadb:10.8
-    restart: unless-stopped
+    image: mariadb
+    restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=secret
+      MYSQL_ROOT_PASSWORD: secret
     volumes:
       - ./Database/data:/var/lib/mysql
       - ./Database/sql:/docker-entrypoint-initdb.d
-    networks:
-      - app-network
-
-  nginx-proxy:
-    image: nginx:alpine
-    restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-      - frontend-static:/usr/share/nginx/html/frontend
-    depends_on:
-      - frontend
-      - webservice
+      - 3307:3306
     networks:
       - app-network
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  golang-app:
+    build: 
+      context: ./Webservice
+    restart: always
+    ports:
+      - 8080:8080
     depends_on:
-      - nginx-proxy
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
-volumes:
-  db-data:
-  frontend-static:
+      mariadb:
+        condition: service_healthy
+    environment:
+      - DB_PORT=3306
+    networks:
+      - app-network
+  vue-app:
+    build: 
+      context: ./Frontend/air-controller-dashboard
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      golang-app:
+        condition: service_started
+    networks:
+      - app-network
 
 networks:
   app-network:
-    driver: bridge
+    driver: bridge  

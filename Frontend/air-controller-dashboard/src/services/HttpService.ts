@@ -2,7 +2,8 @@ import axios, { AxiosError } from 'axios';
 import { AuthService } from './AuthService';
 
 const apiClient = axios.create({
-    baseURL: '/api',
+    // baseURL: '/api',
+    baseURL: 'http://172.18.14.27:8080',
     headers: {
         'Content-Type': 'application/json'
     }

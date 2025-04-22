@@ -9,7 +9,7 @@ char pass[] = SECRET_PASS;
 
 void checkIaqSensorStatus(void);
 
-const char serverAddress[] = "192.168.35.251";
+const char serverAddress[] = "172.18.14.27";
 const int serverPort = 8080;
 
 const String deviceName = "Nano IOT 33";

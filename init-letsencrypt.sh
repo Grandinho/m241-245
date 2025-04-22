@@ -4,8 +4,8 @@
 # Modified from https://github.com/wmnnd/nginx-certbot
 
 # Replace with your domain and email
-domains=(yourdomain.com www.yourdomain.com)
-email="your-email@example.com" # Adding a valid address is strongly recommended
+domains=(aircontroller.ch www.aircontroller.ch)
+email="aircontroller@gmail.com" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 # Create required directories
@@ -62,7 +62,8 @@ docker-compose run --rm --entrypoint "\
     $domain_args \
     --rsa-key-size 4096 \
     --agree-tos \
-    --force-renewal" certbot
+    --non-interactive \
+    --force-renewal" certbot 
 
 echo "### Reloading nginx ..."
 docker-compose exec nginx-proxy nginx -s reload
