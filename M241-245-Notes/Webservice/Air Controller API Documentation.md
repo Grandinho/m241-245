@@ -2,8 +2,6 @@
 
 ## Overview
 
-The Air Controller API provides endpoints for managing devices, sensor readings, and user authentication for the Air Quality monitoring system. This documentation outlines all available endpoints, required parameters, and response formats.
-
 Base URL: `http://RaspberryPIIp:8080`
 
 ## Authentication

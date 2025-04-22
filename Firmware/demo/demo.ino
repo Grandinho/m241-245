@@ -9,7 +9,7 @@ char pass[] = SECRET_PASS;
 
 void checkIaqSensorStatus(void);
 
-const char serverAddress[] = "192.168.156.222";
+const char serverAddress[] = "192.168.35.251";
 const int serverPort = 8080;
 
 const String deviceName = "Nano IOT 33";
@@ -31,6 +31,35 @@ const unsigned long sensorReadingInterval = 30000;
 
 void setup()
 {
+
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect
+  }
+  Serial.println("Scanning I2C bus...");
+    // Initialize I2C bus explicitly
+  Wire.begin();
+  Wire.setClock(100000); // Lower speed for better reliability
+  byte error, address;
+  int deviceCount = 0;
+
+  for(address = 1; address < 127; address++) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+  
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.print(address, HEX);
+      Serial.println();
+      deviceCount++;
+    }
+  }
+
+  if (deviceCount == 0) {
+    Serial.println("No I2C devices found");
+  }
+
   iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
   output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
   Serial.println(output);
@@ -60,6 +89,7 @@ void setup()
   connectToWiFi();
 
   macAddress = getMACAddress();
+  Serial.println(macAddress);
   deviceRegistered = isDeviceRegistered();
 
   if (!deviceRegistered)
@@ -89,7 +119,7 @@ void loop()
     return;
   }
 
-  if (!deviceRequested)
+  if (!deviceRequested && !deviceRegistered)
   {
     requestDevice();
     delay(3000);
@@ -211,13 +241,15 @@ void requestDevice()
   }
   else
   {
-    if (response == "device already registered")
+    if (response.indexOf("device already registered") > -1)
     {
       deviceRegistered = true;
+      Serial.println("Device is already registered");
     }
-    else if (response == "device was declined")
+    else if (response.indexOf("device was declined") > -1)
     {
       deviceDeclined = true;
+      Serial.println("Device was declined");
     }
   }
 }
