@@ -1,3 +1,5 @@
+# version: '3.8'
+
 services:
   mariadb:
     image: mariadb
@@ -44,4 +46,4 @@ services:
 
 networks:
   app-network:
-    driver: bridge
+    driver: bridge  

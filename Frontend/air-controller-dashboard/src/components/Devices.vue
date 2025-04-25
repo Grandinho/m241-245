@@ -27,31 +27,12 @@ function switchDevice(id: number) {
 // Optional: Add scroll buttons functionality
 const scrollContainer = ref(null);
 
-function scrollLeft() {
-    if (scrollContainer.value) {
-        scrollContainer.value.scrollBy({ left: -200, behavior: 'smooth' });
-    }
-}
-
-function scrollRight() {
-    if (scrollContainer.value) {
-        scrollContainer.value.scrollBy({ left: 200, behavior: 'smooth' });
-    }
-}
 </script>
 
 <template>
     <div class="conn-devices">
         <div class="header-row">
-            <h2>Connected Devices</h2>
-            <div class="scroll-buttons">
-                <button class="scroll-btn left" @click="scrollLeft" aria-label="Scroll left">
-                    <span>←</span>
-                </button>
-                <button class="scroll-btn right" @click="scrollRight" aria-label="Scroll right">
-                    <span>→</span>
-                </button>
-            </div>
+            <h2>Connected Devices</h2>  
         </div>
         <div class="devices-container">
             <div class="devices" ref="scrollContainer">

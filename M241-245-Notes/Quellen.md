@@ -4,3 +4,4 @@ https://randomnerdtutorials.com/bme680-sensor-arduino-gas-temperature-humidity-p
 
 
 bsec: https://www.youtube.com/watch?v=LStgNCrPo9M
+https://github.com/boschsensortec/BSEC-Arduino-library

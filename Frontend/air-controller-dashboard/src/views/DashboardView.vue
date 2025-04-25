@@ -21,7 +21,7 @@ const newestSensorReading = ref(<ISensorReading>{
     carbondioxide: 0,
     humidity: 0,
     temperature: 0,
-    createdAt: new Date()
+    createdAt: new Date(0)
 })
 onMounted(() => {
     loadDevices()

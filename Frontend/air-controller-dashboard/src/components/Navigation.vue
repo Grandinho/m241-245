@@ -21,6 +21,12 @@ onMounted(() => {
     if (isAuthenticated.value) {
         loadRequestedDevices();
     }
+
+    window.setInterval(() => {
+        if (isAuthenticated.value) {
+            loadRequestedDevices()
+        }
+    }, 60000)
     document.addEventListener("click", handleClickOutside);
 });
 

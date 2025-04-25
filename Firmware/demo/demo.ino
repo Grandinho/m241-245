@@ -7,7 +7,9 @@
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
-const char serverAddress[] = "192.168.156.222";
+void checkIaqSensorStatus(void);
+
+const char serverAddress[] = "172.18.14.27";
 const int serverPort = 8080;
 
 Bsec iaqSensor;
@@ -22,20 +24,17 @@ bool deviceRequested = false;
 bool deviceRegistered = false;
 bool deviceDeclined = false;
 unsigned long lastSensorReadingTime = 0;
-const unsigned long sensorReadingInterval = 30000;
-
-void checkIaqSensorStatus(void);
-void connectToWiFi();
-void printWiFiStatus();
-String getMACAddress();
-void requestDevice();
-bool isDeviceRegistered();
-void readSensorData();
-void sendSensorReading();
+const unsigned long sensorReadingInterval = 10000;
 
 void setup()
 {
+
   Serial.begin(9600);
+  while (!Serial)
+  {
+    ; // wait for serial port to connect
+  }
+  readI2CBUS();
 
   iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
   output = "\nBSEC library version " + String(iaqSensor.version.major) + "." +
@@ -70,11 +69,15 @@ void setup()
 
   connectToWiFi();
   macAddress = getMACAddress();
-  deviceRegistered = isDeviceRegistered();
+  Serial.println(macAddress);
 
-  if (!deviceRegistered)
+  if (WiFi.status() == WL_CONNECTED)
   {
-    requestDevice();
+    deviceRegistered = isDeviceRegistered();
+    if (!deviceRegistered)
+    {
+      requestDevice();
+    }
   }
 }
 
@@ -86,7 +89,11 @@ void loop()
   {
     if (currentTime - lastSensorReadingTime >= sensorReadingInterval)
     {
-      readSensorData();
+      bool isSuccessful = readSensorData();
+      if (!isSuccessful)
+      {
+        readI2CBUS();
+      }
       lastSensorReadingTime = currentTime;
     }
     return;
@@ -99,7 +106,7 @@ void loop()
     return;
   }
 
-  if (!deviceRequested)
+  if (!deviceRequested || !deviceRegistered)
   {
     requestDevice();
     delay(3000);
@@ -215,13 +222,19 @@ void requestDevice()
     Serial.println("Device request successful");
     deviceRequested = true;
   }
-  else if (response == "device already registered")
+  else
   {
-    deviceRegistered = true;
-  }
-  else if (response == "device was declined")
-  {
-    deviceDeclined = true;
+    if (response.indexOf("device already registered") > -1)
+    {
+      deviceRegistered = true;
+      deviceRequested = true;
+      Serial.println("Device is already registered");
+    }
+    else if (response.indexOf("device was declined") > -1)
+    {
+      deviceDeclined = true;
+      Serial.println("Device was declined");
+    }
   }
 }
 
@@ -241,7 +254,7 @@ bool isDeviceRegistered()
   return (statusCode >= 200 && statusCode < 300);
 }
 
-void readSensorData()
+bool readSensorData()
 {
   unsigned long time_trigger = millis();
   if (iaqSensor.run())
@@ -262,16 +275,24 @@ void readSensorData()
     output += ", " + String(iaqSensor.humidity);
     output += ", " + String(iaqSensor.gasPercentage);
     Serial.println(output);
+    return true;
   }
   else
   {
     checkIaqSensorStatus();
+    return false;
   }
 }
 
 void sendSensorReading()
 {
-  readSensorData();
+  bool isSuccessful = readSensorData();
+  if (!isSuccessful)
+  {
+    readI2CBUS();
+    return;
+  }
+
   String jsonData = "{\"DeviceMacAddress\":\"" + macAddress +
                     "\",\"temperature\":" + String(iaqSensor.temperature) +
                     ",\"humidity\":" + String(iaqSensor.humidity) +
@@ -317,7 +338,46 @@ void checkIaqSensorStatus(void)
 
   if (iaqSensor.bme68xStatus != BME68X_OK)
   {
-    output = iaqSensor.bme68xStatus < BME68X_OK ? "BME68X error code : " + String(iaqSensor.bme68xStatus) : "BME68X warning code : " + String(iaqSensor.bme68xStatus);
-    Serial.println(output);
+    if (iaqSensor.bme68xStatus < BME68X_OK)
+    {
+      output = "BME68X error code : " + String(iaqSensor.bme68xStatus);
+      Serial.println(output);
+    }
+    else
+    {
+      output = "BME68X warning code : " + String(iaqSensor.bme68xStatus);
+      Serial.println(output);
+    }
+  }
+}
+
+void readI2CBUS()
+{
+  Serial.println("Scanning I2C bus...");
+  // Initialize I2C bus explicitly
+  Wire.begin();
+  Wire.setClock(100000); // Lower speed for better reliability
+  byte error, address;
+  int deviceCount = 0;
+
+  for (address = 1; address < 127; address++)
+  {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0)
+    {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16)
+        Serial.print("0");
+      Serial.print(address, HEX);
+      Serial.println();
+      deviceCount++;
+    }
+  }
+
+  if (deviceCount == 0)
+  {
+    Serial.println("No I2C devices found");
   }
 }
