@@ -7,21 +7,16 @@
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
-void checkIaqSensorStatus(void);
-
 const char serverAddress[] = "192.168.156.222";
 const int serverPort = 8080;
 
-const String deviceName = "Nano IOT 33";
-const String deviceLocation = "M241 Zimmer";
-
 Bsec iaqSensor;
 String output;
+String macAddress = "";
 
 int status = WL_IDLE_STATUS;
 WiFiClient wifiClient;
 HttpClient httpClient = HttpClient(wifiClient, serverAddress, serverPort);
-String macAddress = "";
 
 bool deviceRequested = false;
 bool deviceRegistered = false;
@@ -29,10 +24,24 @@ bool deviceDeclined = false;
 unsigned long lastSensorReadingTime = 0;
 const unsigned long sensorReadingInterval = 30000;
 
+void checkIaqSensorStatus(void);
+void connectToWiFi();
+void printWiFiStatus();
+String getMACAddress();
+void requestDevice();
+bool isDeviceRegistered();
+void readSensorData();
+void sendSensorReading();
+
 void setup()
 {
+  Serial.begin(9600);
+
   iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
-  output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
+  output = "\nBSEC library version " + String(iaqSensor.version.major) + "." +
+           String(iaqSensor.version.minor) + "." +
+           String(iaqSensor.version.major_bugfix) + "." +
+           String(iaqSensor.version.minor_bugfix);
   Serial.println(output);
   checkIaqSensorStatus();
 
@@ -54,11 +63,12 @@ void setup()
   iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
   checkIaqSensorStatus();
 
-  output = "Timestamp [ms], IAQ, IAQ accuracy, Static IAQ, CO2 equivalent, breath VOC equivalent, raw temp[°C], pressure [hPa], raw relative humidity [%], gas [Ohm], Stab Status, run in status, comp temp[°C], comp humidity [%], gas percentage";
+  output = "Timestamp [ms], IAQ, IAQ accuracy, Static IAQ, CO2 equivalent, breath VOC equivalent, "
+           "raw temp[°C], pressure [hPa], raw relative humidity [%], gas [Ohm], Stab Status, run in status, "
+           "comp temp[°C], comp humidity [%], gas percentage";
   Serial.println(output);
 
   connectToWiFi();
-
   macAddress = getMACAddress();
   deviceRegistered = isDeviceRegistered();
 
@@ -70,10 +80,10 @@ void setup()
 
 void loop()
 {
+  unsigned long currentTime = millis();
+
   if (deviceDeclined)
   {
-    Serial.println("The device has been declined. Sensor data are going to be readed but not send.");
-    unsigned long currentTime = millis();
     if (currentTime - lastSensorReadingTime >= sensorReadingInterval)
     {
       readSensorData();
@@ -96,7 +106,6 @@ void loop()
     return;
   }
 
-  unsigned long currentTime = millis();
   if (currentTime - lastSensorReadingTime >= sensorReadingInterval)
   {
     sendSensorReading();
@@ -176,9 +185,6 @@ String getMACAddress()
   }
 
   macStr.toUpperCase();
-  Serial.print("MAC Address: ");
-  Serial.println(macStr);
-
   return macStr;
 }
 
@@ -209,50 +215,37 @@ void requestDevice()
     Serial.println("Device request successful");
     deviceRequested = true;
   }
-  else
+  else if (response == "device already registered")
   {
-    if (response == "device already registered")
-    {
-      deviceRegistered = true;
-    }
-    else if (response == "device was declined")
-    {
-      deviceDeclined = true;
-    }
+    deviceRegistered = true;
+  }
+  else if (response == "device was declined")
+  {
+    deviceDeclined = true;
   }
 }
 
 bool isDeviceRegistered()
 {
-  Serial.println("\Checking if device registered...");
+  Serial.println("\nChecking if device registered...");
 
   httpClient.beginRequest();
   httpClient.get("/device/" + macAddress);
   httpClient.endRequest();
 
   int statusCode = httpClient.responseStatusCode();
-  String response = httpClient.responseBody();
 
   Serial.print("Status code: ");
   Serial.println(statusCode);
-  Serial.print("Response: ");
-  Serial.println(response);
 
-  if (statusCode >= 200 && statusCode < 300)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  return (statusCode >= 200 && statusCode < 300);
 }
 
 void readSensorData()
 {
   unsigned long time_trigger = millis();
   if (iaqSensor.run())
-  { // If new data is available
+  {
     output = String(time_trigger);
     output += ", " + String(iaqSensor.iaq);
     output += ", " + String(iaqSensor.iaqAccuracy);
@@ -318,29 +311,13 @@ void checkIaqSensorStatus(void)
 {
   if (iaqSensor.bsecStatus != BSEC_OK)
   {
-    if (iaqSensor.bsecStatus < BSEC_OK)
-    {
-      output = "BSEC error code : " + String(iaqSensor.bsecStatus);
-      Serial.println(output);
-    }
-    else
-    {
-      output = "BSEC warning code : " + String(iaqSensor.bsecStatus);
-      Serial.println(output);
-    }
+    output = iaqSensor.bsecStatus < BSEC_OK ? "BSEC error code : " + String(iaqSensor.bsecStatus) : "BSEC warning code : " + String(iaqSensor.bsecStatus);
+    Serial.println(output);
   }
 
   if (iaqSensor.bme68xStatus != BME68X_OK)
   {
-    if (iaqSensor.bme68xStatus < BME68X_OK)
-    {
-      output = "BME68X error code : " + String(iaqSensor.bme68xStatus);
-      Serial.println(output);
-    }
-    else
-    {
-      output = "BME68X warning code : " + String(iaqSensor.bme68xStatus);
-      Serial.println(output);
-    }
+    output = iaqSensor.bme68xStatus < BME68X_OK ? "BME68X error code : " + String(iaqSensor.bme68xStatus) : "BME68X warning code : " + String(iaqSensor.bme68xStatus);
+    Serial.println(output);
   }
 }
