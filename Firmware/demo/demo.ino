@@ -7,8 +7,6 @@
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
-void checkIaqSensorStatus(void);
-
 const char serverAddress[] = "172.18.14.27";
 const int serverPort = 8080;
 
@@ -26,14 +24,22 @@ bool deviceDeclined = false;
 unsigned long lastSensorReadingTime = 0;
 const unsigned long sensorReadingInterval = 10000;
 
+void checkIaqSensorStatus(void);
+void connectToWiFi();
+void printWiFiStatus();
+String getMACAddress();
+void requestDevice();
+bool isDeviceRegistered();
+bool readSensorData();
+void sendSensorReading();
+void readI2CBUS();
+
 void setup()
 {
-
   Serial.begin(9600);
   while (!Serial)
-  {
-    ; // wait for serial port to connect
-  }
+    ;
+
   readI2CBUS();
 
   iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
@@ -89,8 +95,7 @@ void loop()
   {
     if (currentTime - lastSensorReadingTime >= sensorReadingInterval)
     {
-      bool isSuccessful = readSensorData();
-      if (!isSuccessful)
+      if (!readSensorData())
       {
         readI2CBUS();
       }
@@ -191,8 +196,7 @@ String getMACAddress()
     }
   }
 
-  macStr.toUpperCase();
-  return macStr;
+  return macStr.toUpperCase();
 }
 
 void requestDevice()
@@ -222,19 +226,16 @@ void requestDevice()
     Serial.println("Device request successful");
     deviceRequested = true;
   }
-  else
+  else if (response.indexOf("device already registered") > -1)
   {
-    if (response.indexOf("device already registered") > -1)
-    {
-      deviceRegistered = true;
-      deviceRequested = true;
-      Serial.println("Device is already registered");
-    }
-    else if (response.indexOf("device was declined") > -1)
-    {
-      deviceDeclined = true;
-      Serial.println("Device was declined");
-    }
+    deviceRegistered = true;
+    deviceRequested = true;
+    Serial.println("Device is already registered");
+  }
+  else if (response.indexOf("device was declined") > -1)
+  {
+    deviceDeclined = true;
+    Serial.println("Device was declined");
   }
 }
 
@@ -247,7 +248,6 @@ bool isDeviceRegistered()
   httpClient.endRequest();
 
   int statusCode = httpClient.responseStatusCode();
-
   Serial.print("Status code: ");
   Serial.println(statusCode);
 
@@ -257,6 +257,7 @@ bool isDeviceRegistered()
 bool readSensorData()
 {
   unsigned long time_trigger = millis();
+
   if (iaqSensor.run())
   {
     output = String(time_trigger);
@@ -286,8 +287,7 @@ bool readSensorData()
 
 void sendSensorReading()
 {
-  bool isSuccessful = readSensorData();
-  if (!isSuccessful)
+  if (!readSensorData())
   {
     readI2CBUS();
     return;
@@ -318,14 +318,7 @@ void sendSensorReading()
   Serial.print("Response: ");
   Serial.println(response);
 
-  if (statusCode >= 200 && statusCode < 300)
-  {
-    Serial.println("Sensor data sent successfully");
-  }
-  else
-  {
-    Serial.println("Failed to send sensor data");
-  }
+  Serial.println(statusCode >= 200 && statusCode < 300 ? "Sensor data sent successfully" : "Failed to send sensor data");
 }
 
 void checkIaqSensorStatus(void)
@@ -338,25 +331,17 @@ void checkIaqSensorStatus(void)
 
   if (iaqSensor.bme68xStatus != BME68X_OK)
   {
-    if (iaqSensor.bme68xStatus < BME68X_OK)
-    {
-      output = "BME68X error code : " + String(iaqSensor.bme68xStatus);
-      Serial.println(output);
-    }
-    else
-    {
-      output = "BME68X warning code : " + String(iaqSensor.bme68xStatus);
-      Serial.println(output);
-    }
+    output = iaqSensor.bme68xStatus < BME68X_OK ? "BME68X error code : " + String(iaqSensor.bme68xStatus) : "BME68X warning code : " + String(iaqSensor.bme68xStatus);
+    Serial.println(output);
   }
 }
 
 void readI2CBUS()
 {
   Serial.println("Scanning I2C bus...");
-  // Initialize I2C bus explicitly
   Wire.begin();
   Wire.setClock(100000); // Lower speed for better reliability
+
   byte error, address;
   int deviceCount = 0;
 
@@ -370,8 +355,7 @@ void readI2CBUS()
       Serial.print("I2C device found at address 0x");
       if (address < 16)
         Serial.print("0");
-      Serial.print(address, HEX);
-      Serial.println();
+      Serial.println(address, HEX);
       deviceCount++;
     }
   }
